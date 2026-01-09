@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Commandes - Admin{% endblock %}
+
+{% block body %}
+    <div class="container" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.5rem; color: var(--color-primary);">Gestion des Commandes</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Retour au dashboard</a>
+            </div>
+        </div>
+
+        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des commandes ({{ orders|length }})</h2>
+            </div>
+
+            {% if orders|length > 0 %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e0e0e0;">
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">ID</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Date</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Total</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Statut</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 1rem;">#{{ order.id }}</td>
+                                    <td style="padding: 1rem;">{{ order.dateat|date('d/m/Y H:i') }}</td>
+                                    <td style="padding: 1rem; font-weight: bold; color: var(--color-primary);">{{ order.total }} €</td>
+                                    <td style="padding: 1rem;">
+                                        <span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; 
+                                            {% if order.status == 'pending' %}
+                                                background-color: #fef3c7; color: #d97706;
+                                            {% elseif order.status == 'confirmed' %}
+                                                background-color: #dbeafe; color: #1e40af;
+                                            {% elseif order.status == 'shipped' %}
+                                                background-color: #d1fae5; color: #059669;
+                                            {% elseif order.status == 'delivered' %}
+                                                background-color: #d1fae5; color: #059669;
+                                            {% else %}
+                                                background-color: #e5e7eb; color: #374151;
+                                            {% endif %}">
+                                            {{ order.status|upper }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <a href="#" class="btn btn-small" style="background-color: var(--color-accent); color: white;">Voir</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucune commande</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

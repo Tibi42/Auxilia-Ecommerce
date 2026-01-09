@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Auxilia E-commerce
+{% endblock %}
+
+{% block body %}
+	<section class="hero">
+		<div class="carousel" data-controller="carousel">
+			<div class="carousel-slides">
+				<div class="carousel-slide active" data-carousel-target="slide">
+					<div class="slide-content">
+						<h1>Bienvenue sur Auxilia E-commerce</h1>
+						<p>Découvrez notre sélection de produits de qualité</p>
+						<a href="{{ path('app_product') }}" class="btn btn-primary btn-large">Découvrir nos produits</a>
+					</div>
+				</div>
+				<div class="carousel-slide" data-carousel-target="slide">
+					<div class="slide-content">
+						<h1>Livraison gratuite</h1>
+						<p>À partir de 50€ d'achat, profitez de la livraison gratuite</p>
+						<a href="{{ path('app_product') }}" class="btn btn-primary btn-large">En savoir plus</a>
+					</div>
+				</div>
+				<div class="carousel-slide" data-carousel-target="slide">
+					<div class="slide-content">
+						<h1>Nouveautés</h1>
+						<p>Découvrez nos dernières arrivées et promotions</p>
+						<a href="{{ path('app_product') }}" class="btn btn-primary btn-large">Voir les nouveautés</a>
+					</div>
+				</div>
+			</div>
+			<button class="carousel-prev" data-action="click->carousel#previous">‹</button>
+			<button class="carousel-next" data-action="click->carousel#next">›</button>
+		</div>
+	</section>
+
+	<section class="intro">
+		<div class="container">
+			<div class="intro-content">
+				<h2>Bienvenue dans notre boutique en ligne</h2>
+				<p>Nous sommes fiers de vous proposer une large sélection de produits de qualité dans différentes catégories. Que vous recherchiez des produits électroniques, des vêtements, des articles pour la maison ou du matériel de sport, vous trouverez ce dont vous avez besoin dans notre catalogue.</p>
+				<a href="{{ path('app_product') }}" class="btn btn-secondary">Découvrir nos produits</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="featured-products">
+		<div class="container">
+			<h2>Nos produits en vedette</h2>
+			<div class="products-grid">
+				{% for product in featuredProducts %}
+					{% include 'components/product_card.html.twig' with {product: product} %}
+				{% else %}
+					<p class="no-products">Aucun produit disponible pour le moment.</p>
+				{% endfor %}
+			</div>
+			<div class="text-center">
+				<a href="{{ path('app_product') }}" class="btn btn-primary btn-large">Voir tous les produits</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="about">
+		<div class="container">
+			<div class="about-content">
+				<h2>Notre engagement</h2>
+				<p>Chez Auxilia E-commerce, nous nous engageons à vous offrir une expérience d'achat exceptionnelle. Nous sélectionnons soigneusement chaque produit pour garantir qualité et satisfaction. Notre équipe est à votre disposition pour répondre à toutes vos questions et vous accompagner dans vos achats.</p>
+                <a href="{{ path('app_about') }}" class="btn btn-secondary">En savoir plus</a>
+			</div>
+		</div>
+	</section>
+{% endblock %}

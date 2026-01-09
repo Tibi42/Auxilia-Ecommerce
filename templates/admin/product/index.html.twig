@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Produits - Admin{% endblock %}
+
+{% block body %}
+    <div class="container" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.5rem; color: var(--color-primary);">Gestion des Produits</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Retour au dashboard</a>
+                <a href="{{ path('app_product') }}" class="btn btn-primary">Voir sur le site</a>
+            </div>
+        </div>
+
+        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des produits ({{ products|length }})</h2>
+            </div>
+
+            {% if products|length > 0 %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e0e0e0;">
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">ID</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Nom</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Catégorie</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Prix</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Stock</th>
+                                <th style="padding: 1rem; text-align: left; color: var(--color-text);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 1rem;">#{{ product.id }}</td>
+                                    <td style="padding: 1rem;">
+                                        <strong>{{ product.name }}</strong>
+                                        {% if product.description %}
+                                            <br><small style="color: var(--color-text-light);">{{ product.description|slice(0, 50) }}...</small>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 1rem;">{{ product.category }}</td>
+                                    <td style="padding: 1rem; font-weight: bold; color: var(--color-primary);">{{ product.price }} €</td>
+                                    <td style="padding: 1rem;">
+                                        <span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; 
+                                            {% if product.stock < 10 %}
+                                                background-color: #fee2e2; color: #dc2626;
+                                            {% elseif product.stock < 30 %}
+                                                background-color: #fef3c7; color: #d97706;
+                                            {% else %}
+                                                background-color: #d1fae5; color: #059669;
+                                            {% endif %}">
+                                            {{ product.stock ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <a href="#" class="btn btn-small" style="background-color: var(--color-accent); color: white; margin-right: 0.5rem;">Modifier</a>
+                                        <a href="#" class="btn btn-small btn-danger">Supprimer</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun produit</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
