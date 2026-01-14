@@ -17,6 +17,7 @@ final class ProductController extends AbstractController
         $limit = $request->query->getInt('limit', 9);
         $sort = $request->query->get('sort', 'p.id');
         $direction = $request->query->get('direction', 'asc');
+        $q = $request->query->get('q');
 
         // Allow only specific sort fields to prevent SQL injection or errors
         $allowedSorts = ['p.price', 'p.name', 'p.id'];
@@ -24,8 +25,15 @@ final class ProductController extends AbstractController
             $sort = 'p.id';
         }
 
-        $queryBuilder = $productRepository->createQueryBuilder('p')
-            ->orderBy($sort, $direction);
+        $queryBuilder = $productRepository->createQueryBuilder('p');
+
+        if ($q) {
+            $queryBuilder
+                ->andWhere('p.name LIKE :q OR p.description LIKE :q')
+                ->setParameter('q', '%' . $q . '%');
+        }
+
+        $queryBuilder->orderBy($sort, $direction);
 
         $pagination = $paginator->paginate(
             $queryBuilder,
@@ -37,7 +45,8 @@ final class ProductController extends AbstractController
             'pagination' => $pagination,
             'currentLimit' => $limit,
             'currentSort' => $sort,
-            'currentDirection' => $direction
+            'currentDirection' => $direction,
+            'q' => $q
         ]);
     }
 }

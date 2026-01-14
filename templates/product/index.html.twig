@@ -11,18 +11,18 @@
             <div class="sort-control">
                 <label for="sort" style="margin-right: 0.5rem;">Trier par :</label>
                 <select id="sort" onchange="window.location.href=this.value" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
-                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.price', direction: 'asc'}) }}" {% if currentSort == 'p.price' and currentDirection == 'asc' %}selected{% endif %}>Prix croissant</option>
-                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.price', direction: 'desc'}) }}" {% if currentSort == 'p.price' and currentDirection == 'desc' %}selected{% endif %}>Prix décroissant</option>
-                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.name', direction: 'asc'}) }}" {% if currentSort == 'p.name' and currentDirection == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.price', direction: 'asc', q: q}) }}" {% if currentSort == 'p.price' and currentDirection == 'asc' %}selected{% endif %}>Prix croissant</option>
+                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.price', direction: 'desc', q: q}) }}" {% if currentSort == 'p.price' and currentDirection == 'desc' %}selected{% endif %}>Prix décroissant</option>
+                    <option value="{{ path('app_product', {page: 1, limit: currentLimit, sort: 'p.name', direction: 'asc', q: q}) }}" {% if currentSort == 'p.name' and currentDirection == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
                 </select>
             </div>
             
             <div class="limit-control">
                 <label for="limit" style="margin-right: 0.5rem;">Afficher :</label>
                 <select id="limit" onchange="window.location.href=this.value" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
-                    <option value="{{ path('app_product', {page: 1, limit: 9, sort: currentSort, direction: currentDirection}) }}" {% if currentLimit == 9 %}selected{% endif %}>9</option>
-                    <option value="{{ path('app_product', {page: 1, limit: 18, sort: currentSort, direction: currentDirection}) }}" {% if currentLimit == 18 %}selected{% endif %}>18</option>
-                    <option value="{{ path('app_product', {page: 1, limit: 36, sort: currentSort, direction: currentDirection}) }}" {% if currentLimit == 36 %}selected{% endif %}>36</option>
+                    <option value="{{ path('app_product', {page: 1, limit: 9, sort: currentSort, direction: currentDirection, q: q}) }}" {% if currentLimit == 9 %}selected{% endif %}>9</option>
+                    <option value="{{ path('app_product', {page: 1, limit: 18, sort: currentSort, direction: currentDirection, q: q}) }}" {% if currentLimit == 18 %}selected{% endif %}>18</option>
+                    <option value="{{ path('app_product', {page: 1, limit: 36, sort: currentSort, direction: currentDirection, q: q}) }}" {% if currentLimit == 36 %}selected{% endif %}>36</option>
                 </select>
             </div>
         </div>

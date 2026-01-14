@@ -14,7 +14,10 @@
                 <li><a href="{{ path('app_contact') }}">Contact</a></li>
             </ul>
             <div class="header-actions">
-                <a href="{{ path('app_product') }}" class="search-icon">🔍</a>
+                <form action="{{ path('app_product') }}" method="get" class="search-form" style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; margin-right: 1rem;">
+                    <input type="text" name="q" placeholder="Rechercher..." style="border: none; padding: 0.5rem; outline: none;">
+                    <button type="submit" style="background: none; border: none; padding: 0.5rem; cursor: pointer;">🔍</button>
+                </form>
                 {% if app.user %}
                     {% if is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('app_admin_dashboard') }}" class="login-link" style="background-color: var(--color-primary); color: white;">Admin</a>
