@@ -17,7 +17,22 @@
             <span style="color: var(--color-text-light); font-size: 0.9rem;">Stock: {{ product.stock ?? 'N/A' }}</span>
         </div>
         
-        <a href="{{ path('app_product') }}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Voir le détail</a>
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <a href="{{ path('app_product') }}" 
+               class="btn btn-primary" 
+               style="flex: 1; text-align: center;"
+               data-action="click->modal#open"
+               data-name="{{ product.name }}"
+               data-description="{{ product.description }}"
+               data-price="{{ product.price }}"
+               data-add-to-cart-url="{{ path('cart_add', {id: product.id}) }}"
+            >
+               Voir
+            </a>
+            <a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-secondary" style="flex: 0 0 auto;" title="Ajouter au panier">
+                <i class="fas fa-cart-plus"></i>
+            </a>
+        </div>
     </div>
 </div>
 

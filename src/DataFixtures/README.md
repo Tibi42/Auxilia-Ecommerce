@@ -58,3 +58,4 @@ Chaque produit contient :
 - Un stock (quantité disponible)
 - Une catégorie associée
 
+

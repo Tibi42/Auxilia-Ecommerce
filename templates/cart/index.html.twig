@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre Panier - Auxilia E-commerce{% endblock %}
+
+{% block body %}
+<div class="container cart-container">
+    <h1>Votre Panier</h1>
+
+    {% if cart | length > 0 %}
+        <div class="cart-content">
+            <div class="cart-items">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th class="text-center">Prix</th>
+                            <th class="text-center">Quantité</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                            <tr>
+                                <td data-label="Produit">
+                                    <div class="cart-product-info">
+                                        <div class="cart-product-image">
+                                            📦
+                                        </div>
+                                        <div class="cart-product-details">
+                                            <h4>{{ item.product.name }}</h4>
+                                            <p>{{ item.product.category ?? 'Général' }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Prix">{{ item.product.price|number_format(2, ',', ' ') }} €</td>
+                                <td data-label="Quantité">
+                                    <div class="cart-quantity">
+                                        <a href="{{ path('cart_remove', {'id': item.product.id}) }}" class="btn-quantity" title="Retirer un">-</a>
+                                        <span>{{ item.quantity }}</span>
+                                        <a href="{{ path('cart_add', {'id': item.product.id}) }}" class="btn-quantity" title="Ajouter un">+</a>
+                                    </div>
+                                </td>
+                                <td data-label="Total" style="font-weight: 600; color: var(--color-primary);">
+                                    {{ (item.product.price * item.quantity)|number_format(2, ',', ' ') }} €
+                                </td>
+                                <td data-label="Actions" class="text-center">
+                                    <a href="{{ path('cart_remove', {'id': item.product.id}) }}" class="text-danger" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cart-summary">
+                <h3>Résumé de la commande</h3>
+                <div class="cart-summary-row">
+                    <span>Sous-total</span>
+                    <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>Livraison</span>
+                    <span>Offerte</span>
+                </div>
+                <div class="cart-summary-row total">
+                    <span>Total</span>
+                    <span>{{ total|number_format(2, ',', ' ') }} €</span>
+                </div>
+                
+                <div class="cart-actions">
+                    <a href="#" class="btn btn-primary btn-full btn-large">
+                        <span class="btn-text">Passer la commande</span>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </a>
+                </div>
+                
+                <div style="margin-top: 1.5rem; text-align: center;">
+                     <a href="{{ path('app_product') }}" class="link-primary">Continuer mes achats</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="cart-empty">
+            <div class="cart-empty-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h2>Votre panier est vide</h2>
+            <p style="margin: 1rem 0 2rem; color: var(--color-text-light);">Découvrez nos produits et commencez votre shopping !</p>
+            <a href="{{ path('app_product') }}" class="btn btn-primary btn-large">
+                Voir les produits
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

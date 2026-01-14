@@ -60,6 +60,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resetTokenExpiresAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $cart = [];
+
+    public function getCart(): ?array
+    {
+        return $this->cart;
+    }
+
+    public function setCart(?array $cart): static
+    {
+        $this->cart = $cart;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

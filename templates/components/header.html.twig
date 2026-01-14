@@ -24,8 +24,8 @@
                 {% else %}
                     <a href="{{ path('app_login') }}" class="login-link">Connexion</a>
                 {% endif %}
-                <a href="#" class="cart-icon">
-                    🛒
+                <a href="{{ path('cart_index') }}" class="cart-icon" title="Voir mon panier">
+                    <i class="fas fa-shopping-cart"></i>
                 </a>
             </div>
         </div>
