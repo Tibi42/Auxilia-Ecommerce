@@ -22,6 +22,44 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * Récupère tous les produits filtrés par catégorie si fournie
+     * 
+     * @param string|null $category La catégorie à filtrer, null pour tous les produits
+     * @return Product[] Liste des produits
+     */
+    public function findAllByCategory(?string $category = null): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'DESC');
+
+        if ($category !== null && $category !== '') {
+            $qb->andWhere('p.category = :category')
+               ->setParameter('category', $category);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère toutes les catégories distinctes
+     * 
+     * @return string[] Liste des catégories uniques
+     */
+    public function findDistinctCategories(): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('DISTINCT p.category')
+            ->orderBy('p.category', 'ASC');
+
+        $results = $qb->getQuery()->getResult();
+        
+        // Extraire les valeurs de catégories du tableau associatif
+        return array_map(function($row) {
+            return $row['category'];
+        }, $results);
+    }
+
     //    /**
     //     * @return Product[] Returns an array of Product objects
     //     */

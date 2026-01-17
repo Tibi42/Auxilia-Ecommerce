@@ -15,8 +15,24 @@
 		</div>
 
 		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
-			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
 				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des produits ({{ products|length }})</h2>
+				
+				{# Formulaire de filtre par catégorie #}
+				<form method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
+					<label for="category" style="font-weight: 500; color: var(--color-text);">Filtrer par catégorie:</label>
+					<select name="category" id="category" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
+						<option value="">Toutes les catégories</option>
+						{% for category in categories %}
+							<option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
+								{{ category }}
+							</option>
+						{% endfor %}
+					</select>
+					{% if selectedCategory %}
+						<a href="{{ path('app_admin_products') }}" style="padding: 0.5rem 1rem; background-color: #f0f0f0; color: var(--color-text); text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Effacer</a>
+					{% endif %}
+				</form>
 			</div>
 
 			{% if products|length > 0 %}

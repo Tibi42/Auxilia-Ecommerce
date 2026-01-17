@@ -19,18 +19,28 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class ProductController extends AbstractController
 {
     /**
-     * Liste tous les produits pour l'administration
+     * Liste tous les produits pour l'administration avec filtrage par catégorie
      * 
      * @param ProductRepository $productRepository Le repository pour récupérer tous les produits
+     * @param Request $request La requête HTTP entrante pour récupérer le filtre
      * @return Response Une instance de Response vers la liste des produits admin
      */
     #[Route('/admin/products', name: 'app_admin_products')]
-    public function index(ProductRepository $productRepository): Response
+    public function index(ProductRepository $productRepository, Request $request): Response
     {
-        $products = $productRepository->findAll();
+        // Récupère le paramètre de filtre catégorie depuis l'URL
+        $selectedCategory = $request->query->get('category');
+        
+        // Récupère les produits selon le filtre
+        $products = $productRepository->findAllByCategory($selectedCategory);
+        
+        // Récupère toutes les catégories distinctes pour le filtre
+        $categories = $productRepository->findDistinctCategories();
 
         return $this->render('admin/product/index.html.twig', [
             'products' => $products,
+            'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
         ]);
     }
 
