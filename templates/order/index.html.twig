@@ -32,19 +32,19 @@
 											Commande #{{ order.id }}
 										</h3>
 										<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: bold;
-												                                            {% if order.status == 'pending' %}
-												                                                background-color: #fef3c7; color: #d97706;
-												                                            {% elseif order.status == 'confirmed' %}
-												                                                background-color: #dbeafe; color: #1e40af;
-												                                            {% elseif order.status == 'shipped' %}
-												                                                background-color: #d1fae5; color: #059669;
-												                                            {% elseif order.status == 'delivered' %}
-												                                                background-color: #d1fae5; color: #059669;
-												                                            {% elseif order.status == 'cancelled' %}
-												                                                background-color: #fee2e2; color: #dc2626;
-												                                            {% else %}
-												                                                background-color: #e5e7eb; color: #374151;
-												                                            {% endif %}">
+																								                                            {% if order.status == 'pending' %}
+																								                                                background-color: #fef3c7; color: #d97706;
+																								                                            {% elseif order.status == 'confirmed' %}
+																								                                                background-color: #dbeafe; color: #1e40af;
+																								                                            {% elseif order.status == 'shipped' %}
+																								                                                background-color: #d1fae5; color: #059669;
+																								                                            {% elseif order.status == 'delivered' %}
+																								                                                background-color: #d1fae5; color: #059669;
+																								                                            {% elseif order.status == 'cancelled' %}
+																								                                                background-color: #fee2e2; color: #dc2626;
+																								                                            {% else %}
+																								                                                background-color: #e5e7eb; color: #374151;
+																								                                            {% endif %}">
 											{% if order.status == 'pending' %}
 												En attente
 											{% elseif order.status == 'confirmed' %}
@@ -76,6 +76,22 @@
 											</div>
 										</div>
 									</div>
+
+									{% if order.items|length > 0 %}
+										<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+											<h4 style="font-size: 0.9rem; font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem;">Articles :</h4>
+											<ul style="list-style: none; padding: 0; margin: 0;">
+												{% for item in order.items %}
+													<li style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--color-text-light); margin-bottom: 0.25rem;">
+														<span>{{ item.quantity }}x
+															{{ item.productName }}</span>
+														<span>{{ item.price }}
+															€</span>
+													</li>
+												{% endfor %}
+											</ul>
+										</div>
+									{% endif %}
 								</div>
 
 								<div style="display: flex; gap: 0.5rem;">

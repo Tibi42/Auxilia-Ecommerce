@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\CartService;
 use App\Repository\OrderRepository;
 use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -152,6 +153,17 @@ class OrderController extends AbstractController
         $order->setTotal($cartService->getTotal());
 
         $entityManager->persist($order);
+
+        foreach ($cart as $item) {
+            $orderItem = new OrderItem();
+            $orderItem->setOrderRef($order);
+            $orderItem->setProduct($item['product']);
+            $orderItem->setProductName($item['product']->getName());
+            $orderItem->setQuantity($item['quantity']);
+            $orderItem->setPrice($item['product']->getPrice());
+            $entityManager->persist($orderItem);
+        }
+
         $entityManager->flush();
 
         // Vidage du panier
