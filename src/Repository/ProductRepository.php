@@ -23,12 +23,13 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère tous les produits filtrés par catégorie si fournie
+     * Récupère tous les produits filtrés par catégorie et/ou stock si fournis
      * 
      * @param string|null $category La catégorie à filtrer, null pour tous les produits
+     * @param string|null $stockFilter Le filtre de stock ('low', 'medium', 'high', 'out'), null pour tous
      * @return Product[] Liste des produits
      */
-    public function findAllByCategory(?string $category = null): array
+    public function findAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null): array
     {
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.id', 'DESC');
@@ -38,7 +39,41 @@ class ProductRepository extends ServiceEntityRepository
                ->setParameter('category', $category);
         }
 
+        // Filtre par niveau de stock
+        if ($stockFilter !== null && $stockFilter !== '') {
+            switch ($stockFilter) {
+                case 'low':
+                    // Stock faible : moins de 10
+                    $qb->andWhere('p.stock IS NOT NULL AND p.stock < 10');
+                    break;
+                case 'medium':
+                    // Stock moyen : entre 10 et 30
+                    $qb->andWhere('p.stock IS NOT NULL AND p.stock >= 10 AND p.stock <= 30');
+                    break;
+                case 'high':
+                    // Stock élevé : plus de 30
+                    $qb->andWhere('p.stock IS NOT NULL AND p.stock > 30');
+                    break;
+                case 'out':
+                    // En rupture de stock : stock null ou égal à 0
+                    $qb->andWhere('p.stock IS NULL OR p.stock = 0');
+                    break;
+            }
+        }
+
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère tous les produits filtrés par catégorie si fournie
+     * (Méthode conservée pour compatibilité)
+     * 
+     * @param string|null $category La catégorie à filtrer, null pour tous les produits
+     * @return Product[] Liste des produits
+     */
+    public function findAllByCategory(?string $category = null): array
+    {
+        return $this->findAllByCategoryAndStock($category, null);
     }
 
     /**

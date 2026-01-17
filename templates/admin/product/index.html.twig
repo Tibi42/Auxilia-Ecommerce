@@ -18,21 +18,43 @@
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
 				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des produits ({{ products|length }})</h2>
 				
-				{# Formulaire de filtre par catégorie #}
-				<form method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
-					<label for="category" style="font-weight: 500; color: var(--color-text);">Filtrer par catégorie:</label>
-					<select name="category" id="category" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
-						<option value="">Toutes les catégories</option>
-						{% for category in categories %}
-							<option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
-								{{ category }}
-							</option>
-						{% endfor %}
-					</select>
-					{% if selectedCategory %}
-						<a href="{{ path('app_admin_products') }}" style="padding: 0.5rem 1rem; background-color: #f0f0f0; color: var(--color-text); text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Effacer</a>
+				{# Formulaires de filtres #}
+				<div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+					<form method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
+						{# Conserver le filtre stock si actif #}
+						{% if selectedStockFilter %}
+							<input type="hidden" name="stock" value="{{ selectedStockFilter }}">
+						{% endif %}
+						<label for="category" style="font-weight: 500; color: var(--color-text);">Catégorie:</label>
+						<select name="category" id="category" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
+							<option value="">Toutes</option>
+							{% for category in categories %}
+								<option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
+									{{ category }}
+								</option>
+							{% endfor %}
+						</select>
+					</form>
+					
+					<form method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
+						{# Conserver le filtre catégorie si actif #}
+						{% if selectedCategory %}
+							<input type="hidden" name="category" value="{{ selectedCategory }}">
+						{% endif %}
+						<label for="stock" style="font-weight: 500; color: var(--color-text);">Stock:</label>
+						<select name="stock" id="stock" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
+							<option value="">Tous</option>
+							<option value="low" {% if selectedStockFilter == 'low' %}selected{% endif %}>Stock faible (&lt; 10)</option>
+							<option value="medium" {% if selectedStockFilter == 'medium' %}selected{% endif %}>Stock moyen (10-30)</option>
+							<option value="high" {% if selectedStockFilter == 'high' %}selected{% endif %}>Stock élevé (&gt; 30)</option>
+							<option value="out" {% if selectedStockFilter == 'out' %}selected{% endif %}>En rupture</option>
+						</select>
+					</form>
+					
+					{% if selectedCategory or selectedStockFilter %}
+						<a href="{{ path('app_admin_products') }}" style="padding: 0.5rem 1rem; background-color: #f0f0f0; color: var(--color-text); text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Effacer tous</a>
 					{% endif %}
-				</form>
+				</div>
 			</div>
 
 			{% if products|length > 0 %}

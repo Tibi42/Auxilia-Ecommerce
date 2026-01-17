@@ -31,11 +31,12 @@ final class ProductController extends AbstractController
         // Sécurité : Vérification explicite du rôle admin
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         
-        // Récupère le paramètre de filtre catégorie depuis l'URL
+        // Récupère les paramètres de filtres depuis l'URL
         $selectedCategory = $request->query->get('category');
+        $selectedStockFilter = $request->query->get('stock');
         
-        // Récupère les produits selon le filtre
-        $products = $productRepository->findAllByCategory($selectedCategory);
+        // Récupère les produits selon les filtres
+        $products = $productRepository->findAllByCategoryAndStock($selectedCategory, $selectedStockFilter);
         
         // Récupère toutes les catégories distinctes pour le filtre
         $categories = $productRepository->findDistinctCategories();
@@ -44,6 +45,7 @@ final class ProductController extends AbstractController
             'products' => $products,
             'categories' => $categories,
             'selectedCategory' => $selectedCategory,
+            'selectedStockFilter' => $selectedStockFilter,
         ]);
     }
 
