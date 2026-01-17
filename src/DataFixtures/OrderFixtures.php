@@ -62,6 +62,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                     $orderItem->setProductName($product->getName());
                     $orderItem->setQuantity($quantity);
                     $orderItem->setPrice($price);
+                    $orderItem->setTotal((string)($price * $quantity));
 
                     $manager->persist($orderItem);
                     $totalOrder += $price * $quantity;

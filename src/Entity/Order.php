@@ -48,7 +48,6 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-<<<<<<< HEAD
     #[ORM\OneToMany(mappedBy: 'orderRef', targetEntity: OrderItem::class, orphanRemoval: true)]
     private $orderItems;
 
@@ -57,24 +56,6 @@ class Order
         $this->orderItems = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-=======
-    /**
-     * @var Collection<int, OrderItem>
-     */
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderRef', orphanRemoval: true)]
-    private Collection $items;
-
-    public function __construct()
-    {
-        $this->items = new ArrayCollection();
-    }
-
-    /**
-     * Récupère l'identifiant unique de la commande
-     * 
-     * @return int|null L'ID de la commande
-     */
->>>>>>> 6faf1b0eed04b37f0acd80b72ee2fc49a91ceeb7
     public function getId(): ?int
     {
         return $this->id;
@@ -173,7 +154,6 @@ class Order
     }
 
     /**
-<<<<<<< HEAD
      * @return \Doctrine\Common\Collections\Collection<int, OrderItem>
      */
     public function getOrderItems(): \Doctrine\Common\Collections\Collection
@@ -186,40 +166,17 @@ class Order
         if (!$this->orderItems->contains($orderItem)) {
             $this->orderItems->add($orderItem);
             $orderItem->setOrderRef($this);
-=======
-     * @return Collection<int, OrderItem>
-     */
-    public function getItems(): Collection
-    {
-        return $this->items;
-    }
-
-    public function addItem(OrderItem $item): static
-    {
-        if (!$this->items->contains($item)) {
-            $this->items->add($item);
-            $item->setOrderRef($this);
->>>>>>> 6faf1b0eed04b37f0acd80b72ee2fc49a91ceeb7
         }
 
         return $this;
     }
 
-<<<<<<< HEAD
     public function removeOrderItem(OrderItem $orderItem): static
     {
         if ($this->orderItems->removeElement($orderItem)) {
             // set the owning side to null (unless already changed)
             if ($orderItem->getOrderRef() === $this) {
                 $orderItem->setOrderRef(null);
-=======
-    public function removeItem(OrderItem $item): static
-    {
-        if ($this->items->removeElement($item)) {
-            // set the owning side to null (unless already changed)
-            if ($item->getOrderRef() === $this) {
-                $item->setOrderRef(null);
->>>>>>> 6faf1b0eed04b37f0acd80b72ee2fc49a91ceeb7
             }
         }
 
