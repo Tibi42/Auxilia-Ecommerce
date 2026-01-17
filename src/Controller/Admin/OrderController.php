@@ -20,6 +20,9 @@ final class OrderController extends AbstractController
     #[Route('/admin/orders', name: 'app_admin_orders')]
     public function index(OrderRepository $orderRepository, Request $request): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         // Récupère le paramètre de filtre statut depuis l'URL
         $selectedStatus = $request->query->get('status');
         
@@ -46,6 +49,9 @@ final class OrderController extends AbstractController
     #[Route('/admin/orders/{id}', name: 'app_admin_order_show')]
     public function show(int $id, OrderRepository $orderRepository): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $order = $orderRepository->find($id);
 
         if (!$order) {

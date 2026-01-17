@@ -15,6 +15,9 @@ final class UserController extends AbstractController
     #[Route('/admin/users', name: 'app_admin_users')]
     public function index(UserRepository $userRepository): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $users = $userRepository->findAll();
 
         return $this->render('admin/user/index.html.twig', [
@@ -28,6 +31,9 @@ final class UserController extends AbstractController
     #[Route('/admin/users/{id}', name: 'app_admin_user_show')]
     public function show(int $id, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $user = $userRepository->find($id);
 
         if (!$user) {
@@ -54,6 +60,9 @@ final class UserController extends AbstractController
     #[Route('/admin/users/edit/{id}', name: 'app_admin_user_edit')]
     public function edit(int $id, \Symfony\Component\HttpFoundation\Request $request, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $user = $userRepository->find($id);
 
         if (!$user) {
@@ -83,6 +92,9 @@ final class UserController extends AbstractController
     #[Route('/admin/users/delete/{id}', name: 'app_admin_user_delete', methods: ['POST'])]
     public function delete(int $id, \Symfony\Component\HttpFoundation\Request $request, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $user = $userRepository->find($id);
 
         if (!$user) {

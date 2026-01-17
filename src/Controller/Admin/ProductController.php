@@ -28,6 +28,9 @@ final class ProductController extends AbstractController
     #[Route('/admin/products', name: 'app_admin_products')]
     public function index(ProductRepository $productRepository, Request $request): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         // Récupère le paramètre de filtre catégorie depuis l'URL
         $selectedCategory = $request->query->get('category');
         
@@ -55,6 +58,9 @@ final class ProductController extends AbstractController
     #[Route('/admin/product/new', name: 'app_admin_product_new')]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -64,10 +70,30 @@ final class ProductController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
+                // Sécurité : Validation du type MIME réel du fichier
+                $mimeType = $imageFile->getMimeType();
+                $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                
+                if (!in_array($mimeType, $allowedMimeTypes)) {
+                    $this->addFlash('error', 'Type de fichier non autorisé.');
+                    return $this->redirectToRoute('app_admin_product_new');
+                }
+                
+                // Sécurité : Déterminer l'extension à partir du MIME type
+                $extensionMap = [
+                    'image/jpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/webp' => 'webp',
+                ];
+                $extension = $extensionMap[$mimeType] ?? 'jpg';
+                
                 // Génère un nom de fichier unique et sécurisé
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+                $sluggedFilename = $slugger->slug($originalFilename);
+                $newFilename = $sluggedFilename . '-' . uniqid() . '.' . $extension;
+                
+                // Sécurité : S'assurer que le nom de fichier ne contient pas de path traversal
+                $newFilename = basename($newFilename);
 
                 try {
                     // Déplace le fichier vers le répertoire configuré
@@ -109,6 +135,9 @@ final class ProductController extends AbstractController
     #[Route('/admin/product/{id}/edit', name: 'app_admin_product_edit')]
     public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -116,9 +145,29 @@ final class ProductController extends AbstractController
             $imageFile = $form->get('image')->getData();
 
             if ($imageFile) {
+                // Sécurité : Validation du type MIME réel du fichier
+                $mimeType = $imageFile->getMimeType();
+                $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                
+                if (!in_array($mimeType, $allowedMimeTypes)) {
+                    $this->addFlash('error', 'Type de fichier non autorisé.');
+                    return $this->redirectToRoute('app_admin_product_edit', ['id' => $product->getId()]);
+                }
+                
+                // Sécurité : Déterminer l'extension à partir du MIME type
+                $extensionMap = [
+                    'image/jpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/webp' => 'webp',
+                ];
+                $extension = $extensionMap[$mimeType] ?? 'jpg';
+                
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+                $sluggedFilename = $slugger->slug($originalFilename);
+                $newFilename = $sluggedFilename . '-' . uniqid() . '.' . $extension;
+                
+                // Sécurité : S'assurer que le nom de fichier ne contient pas de path traversal
+                $newFilename = basename($newFilename);
 
                 try {
                     $imageFile->move(
@@ -129,11 +178,14 @@ final class ProductController extends AbstractController
                     $this->addFlash('error', 'Erreur lors de l\'upload de la nouvelle image.');
                 }
 
-                // Supprime l'ancienne image du serveur si elle existe
+                // Sécurité : Protection contre path traversal lors de la suppression
                 if ($product->getImageName()) {
-                    $oldImagePath = $this->getParameter('products_directory') . '/' . $product->getImageName();
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
+                    $oldImagePath = $this->getParameter('products_directory') . '/' . basename($product->getImageName());
+                    // S'assurer que le chemin reste dans le répertoire autorisé
+                    $productsDir = realpath($this->getParameter('products_directory'));
+                    $filePath = realpath($oldImagePath);
+                    if ($filePath && strpos($filePath, $productsDir) === 0 && file_exists($filePath)) {
+                        unlink($filePath);
                     }
                 }
 
@@ -166,11 +218,15 @@ final class ProductController extends AbstractController
     {
         // Vérification du jeton CSRF pour la sécurité
         if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-            // Supprime le fichier image du serveur avant de supprimer le produit
+            // Sécurité : Protection contre path traversal lors de la suppression
             if ($product->getImageName()) {
-                $imagePath = $this->getParameter('products_directory') . '/' . $product->getImageName();
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
+                $imageName = basename($product->getImageName());
+                $productsDir = realpath($this->getParameter('products_directory'));
+                $imagePath = $productsDir . '/' . $imageName;
+                // S'assurer que le chemin reste dans le répertoire autorisé
+                $realPath = realpath($imagePath);
+                if ($realPath && strpos($realPath, $productsDir) === 0 && file_exists($realPath)) {
+                    unlink($realPath);
                 }
             }
             $entityManager->remove($product);

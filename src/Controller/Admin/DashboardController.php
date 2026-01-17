@@ -30,6 +30,8 @@ final class DashboardController extends AbstractController
         UserRepository $userRepository,
         OrderRepository $orderRepository
     ): Response {
+        // Sécurité : Vérification explicite du rôle admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $stats = [
             'total_products' => $productRepository->count([]),
             'total_users' => $userRepository->count([]),
