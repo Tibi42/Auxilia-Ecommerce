@@ -43,13 +43,22 @@
 		</div>
 
 		{% if pagination|length > 0 %}
+			<div class="pagination-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background-color: var(--color-light); border-radius: 8px; flex-wrap: wrap; gap: 1rem;">
+				<div style="color: var(--color-text-light); font-size: 0.9rem;">
+					Affichage de <strong>{{ pagination.getPaginationData.firstItemNumber }}</strong> à <strong>{{ pagination.getPaginationData.lastItemNumber }}</strong> sur <strong>{{ pagination.getTotalItemCount }}</strong> produit{{ pagination.getTotalItemCount > 1 ? 's' : '' }}
+				</div>
+				<div style="color: var(--color-text-light); font-size: 0.9rem;">
+					Page <strong>{{ pagination.getCurrentPageNumber }}</strong> sur <strong>{{ pagination.getPageCount }}</strong>
+				</div>
+			</div>
+
 			<div class="products-grid">
 				{% for product in pagination %}
 					{% include 'components/product_card.html.twig' with {product: product} %}
 				{% endfor %}
 			</div>
 
-			<div class="pagination" style="display: flex; justify-content: center; margin-top: 2rem;">
+			<div class="pagination">
 				{{ knp_pagination_render(pagination) }}
 			</div>
 		{% else %}
