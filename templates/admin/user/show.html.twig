@@ -58,8 +58,32 @@
 						<i class="fas fa-shield-alt" style="color: var(--color-primary);"></i>
 						Sécurité
 					</h3>
-					<button class="btn btn-secondary btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px; margin-bottom: 1rem;">Réinitialiser le mot de passe</button>
-					<button class="btn btn-danger btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px;">Désactiver le compte</button>
+					<form method="post" action="{{ path('app_admin_user_reset_password', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser le mot de passe de cet utilisateur ? Un nouveau mot de passe temporaire sera généré.');" style="margin-bottom: 1rem;">
+						<input type="hidden" name="_token" value="{{ csrf_token('reset-password' ~ user.id) }}">
+						<button type="submit" class="btn btn-secondary btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px; border: none; cursor: pointer;">
+							<i class="fas fa-key" style="margin-right: 0.5rem;"></i>
+							Réinitialiser le mot de passe
+						</button>
+					</form>
+					<form method="post" action="{{ path('app_admin_user_toggle_active', {'id': user.id}) }}" onsubmit="return confirm('{{ user.isActive ? 'Êtes-vous sûr de vouloir désactiver ce compte ? L\'utilisateur ne pourra plus se connecter.' : 'Êtes-vous sûr de vouloir activer ce compte ? L\'utilisateur pourra à nouveau se connecter.' }}');">
+						<input type="hidden" name="_token" value="{{ csrf_token('toggle-active' ~ user.id) }}">
+						{% if 'ROLE_ADMIN' in user.roles and user.isActive %}
+							<button type="button" class="btn btn-danger btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px; border: none; cursor: not-allowed; opacity: 0.5;" disabled title="Les comptes administrateurs ne peuvent pas être désactivés">
+								<i class="fas fa-user-slash" style="margin-right: 0.5rem;"></i>
+								Désactiver le compte
+							</button>
+						{% elseif user == app.user and user.isActive %}
+							<button type="button" class="btn btn-danger btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px; border: none; cursor: not-allowed; opacity: 0.5;" disabled title="Vous ne pouvez pas désactiver votre propre compte">
+								<i class="fas fa-user-slash" style="margin-right: 0.5rem;"></i>
+								Désactiver le compte
+							</button>
+						{% else %}
+							<button type="submit" class="btn {{ user.isActive ? 'btn-danger' : 'btn-success' }} btn-full" style="font-size: 0.9rem; padding: 0.8rem; border-radius: 12px; border: none; cursor: pointer;">
+								<i class="fas fa-{{ user.isActive ? 'user-slash' : 'user-check' }}" style="margin-right: 0.5rem;"></i>
+								{{ user.isActive ? 'Désactiver le compte' : 'Activer le compte' }}
+							</button>
+						{% endif %}
+					</form>
 				</div>
 			</div>
 
