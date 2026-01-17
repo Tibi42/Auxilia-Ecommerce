@@ -62,7 +62,7 @@ final class ProductController extends AbstractController
 
         return $this->render('product/index.html.twig', [
             'pagination' => $pagination,
-            'categories' => $categoryRepository->findAll(),
+            'categories' => $categoryRepository->findAllOrderedByName(),
             'currentLimit' => $limit,
             'currentSort' => $sort,
             'currentDirection' => $direction,

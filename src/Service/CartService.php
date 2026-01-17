@@ -18,6 +18,7 @@ class CartService
     private $productRepository;
     private $security;
     private $entityManager;
+    private ?array $fullCart = null;
 
     public function __construct(
         RequestStack $requestStack,
@@ -46,6 +47,7 @@ class CartService
 
         $this->getSession()->set('cart', $cart);
         $this->saveToUser($cart);
+        $this->fullCart = null;
     }
 
     /**
@@ -65,6 +67,7 @@ class CartService
 
         $this->getSession()->set('cart', $cart);
         $this->saveToUser($cart);
+        $this->fullCart = null;
     }
 
     /**
@@ -78,8 +81,9 @@ class CartService
             unset($cart[$id]);
         }
 
-        $this->getSession()->set('cart', $cart); // Uses new getSession() method
-        // $this->saveToUser($cart); // Removed as per provided code
+        $this->getSession()->set('cart', $cart);
+        $this->saveToUser($cart);
+        $this->fullCart = null;
     }
 
     /**
@@ -95,8 +99,19 @@ class CartService
             }
         }
 
-        $this->getSession()->set('cart', $cart); // Uses new getSession() method
-        // $this->saveToUser($cart); // Removed as per provided code
+        $this->getSession()->set('cart', $cart);
+        $this->saveToUser($cart);
+        $this->fullCart = null;
+    }
+
+    /**
+     * Vide complètement le panier (session et base de données)
+     */
+    public function clear(): void
+    {
+        $this->getSession()->set('cart', []);
+        $this->saveToUser([]);
+        $this->fullCart = null;
     }
 
     /**
@@ -104,21 +119,30 @@ class CartService
      */
     public function getFullCart(): array
     {
-        $cart = $this->getSession()->get('cart', []); // Uses new getSession() method
-        $cartData = []; // Changed variable name from $cartWithData to $cartData as per provided code
-
-        foreach ($cart as $id => $quantity) {
-            $product = $this->productRepository->find($id);
-
-            if ($product) {
-                $cartData[] = [
-                    'product' => $product,
-                    'quantity' => $quantity
-                ];
-            }
+        if ($this->fullCart !== null) {
+            return $this->fullCart;
         }
 
-        return $cartData;
+        $cart = $this->getSession()->get('cart', []);
+
+        if (empty($cart)) {
+            $this->fullCart = [];
+            return [];
+        }
+
+        $productIds = array_keys($cart);
+        $products = $this->productRepository->findBy(['id' => $productIds]);
+
+        $cartData = [];
+        foreach ($products as $product) {
+            $cartData[] = [
+                'product' => $product,
+                'quantity' => $cart[$product->getId()]
+            ];
+        }
+
+        $this->fullCart = $cartData;
+        return $this->fullCart;
     }
 
     /**

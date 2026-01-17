@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Service\CartService;
 use App\Repository\OrderRepository;
+use App\Entity\Order;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -99,5 +102,49 @@ class OrderController extends AbstractController
         // Si les coordonnées sont complètes, on pourra procéder à la création de la commande
         // Pour l'instant, on redirige vers une page de confirmation ou un récapitulatif
         return $this->render('order/checkout_confirm.html.twig');
+    }
+
+    /**
+     * Valide la commande, crée l'entité Order et vide le panier
+     */
+    #[Route('/checkout/validate', name: 'app_order_validate', methods: ['POST'])]
+    public function validate(CartService $cartService, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $cart = $cartService->getFullCart();
+        if (empty($cart)) {
+            $this->addFlash('warning', 'Votre panier est vide.');
+            return $this->redirectToRoute('cart_index');
+        }
+
+        // Création de la commande
+        $order = new Order();
+        $order->setUser($user);
+        $order->setDateat(new \DateTime());
+        $order->setStatus('paid');
+        $order->setTotal($cartService->getTotal());
+
+        $entityManager->persist($order);
+        $entityManager->flush();
+
+        // Vidage du panier
+        $cartService->clear();
+
+        return $this->redirectToRoute('app_order_success');
+    }
+
+    /**
+     * Affiche la page de succès après une commande
+     */
+    #[Route('/checkout/success', name: 'app_order_success')]
+    public function success(): Response
+    {
+        return $this->render('order/success.html.twig');
     }
 }
