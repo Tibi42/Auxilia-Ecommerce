@@ -4,24 +4,35 @@ namespace App\Controller\Admin;
 
 use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class OrderController extends AbstractController
 {
     /**
-     * Liste toutes les commandes de la boutique pour l'administration
+     * Liste toutes les commandes de la boutique pour l'administration avec filtrage par statut
      * 
      * @param OrderRepository $orderRepository Le repository pour récupérer toutes les commandes
+     * @param Request $request La requête HTTP entrante pour récupérer le filtre
      * @return Response Une instance de Response vers la liste des commandes admin
      */
     #[Route('/admin/orders', name: 'app_admin_orders')]
-    public function index(OrderRepository $orderRepository): Response
+    public function index(OrderRepository $orderRepository, Request $request): Response
     {
-        $orders = $orderRepository->findBy([], ['id' => 'DESC']);
+        // Récupère le paramètre de filtre statut depuis l'URL
+        $selectedStatus = $request->query->get('status');
+        
+        // Récupère les commandes selon le filtre
+        $orders = $orderRepository->findAllByStatus($selectedStatus);
+        
+        // Récupère tous les statuts distincts pour le filtre
+        $statuses = $orderRepository->findDistinctStatuses();
 
         return $this->render('admin/order/index.html.twig', [
             'orders' => $orders,
+            'statuses' => $statuses,
+            'selectedStatus' => $selectedStatus,
         ]);
     }
 

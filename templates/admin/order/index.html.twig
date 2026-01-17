@@ -14,8 +14,32 @@
 		</div>
 
 		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
-			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
 				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des commandes ({{ orders|length }})</h2>
+				
+				{# Formulaire de filtre par statut #}
+				<form method="get" action="{{ path('app_admin_orders') }}" style="display: flex; gap: 0.5rem; align-items: center;">
+					<label for="status" style="font-weight: 500; color: var(--color-text);">Filtrer par statut:</label>
+					<select name="status" id="status" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
+						<option value="">Tous les statuts</option>
+						{% for status in statuses %}
+							{% set status_labels = {
+								'paid': 'Payée',
+								'confirmed': 'Confirmée',
+								'pending': 'En attente',
+								'delivered': 'Livrée',
+								'cancelled': 'Annulée',
+								'shipped': 'Expédiée'
+							} %}
+							<option value="{{ status }}" {% if selectedStatus == status %}selected{% endif %}>
+								{{ status_labels[status|lower] ?? status }}
+							</option>
+						{% endfor %}
+					</select>
+					{% if selectedStatus %}
+						<a href="{{ path('app_admin_orders') }}" style="padding: 0.5rem 1rem; background-color: #f0f0f0; color: var(--color-text); text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Effacer</a>
+					{% endif %}
+				</form>
 			</div>
 
 			{% if orders|length > 0 %}
