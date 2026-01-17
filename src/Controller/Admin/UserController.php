@@ -26,7 +26,7 @@ final class UserController extends AbstractController
      * Affiche le profil détaillé d'un utilisateur
      */
     #[Route('/admin/users/{id}', name: 'app_admin_user_show')]
-    public function show(int $id, UserRepository $userRepository): Response
+    public function show(int $id, UserRepository $userRepository, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
     {
         $user = $userRepository->find($id);
 
@@ -35,8 +35,16 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('app_admin_users');
         }
 
+        // Récupère les 5 dernières commandes de l'utilisateur pour l'activité récente
+        $recentOrders = $entityManager->getRepository(\App\Entity\Order::class)->findBy(
+            ['user' => $user],
+            ['dateat' => 'DESC'],
+            5
+        );
+
         return $this->render('admin/user/show.html.twig', [
             'user' => $user,
+            'recentOrders' => $recentOrders,
         ]);
     }
 
