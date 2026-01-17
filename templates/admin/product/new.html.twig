@@ -83,12 +83,13 @@
 							Image du produit
 						</h3>
 
-					<div id="image-preview-container" style="margin-bottom: 2rem; position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; border: 2px dashed #cbd5e0; display: flex; align-items: center; justify-content: center; background: white;">
-						<div id="image-placeholder" style="text-align: center; color: #a0aec0;">
+					<div id="image-preview-container" class="drag-drop-zone" style="margin-bottom: 2rem; position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; border: 2px dashed #cbd5e0; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; transition: all 0.3s ease;">
+						<div id="image-placeholder" style="text-align: center; color: #a0aec0; pointer-events: none;">
 							<i class="fas fa-cloud-upload-alt" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-							<p style="font-size: 0.9rem;">Uploader une image</p>
+							<p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Glissez-déposez une image ici</p>
+							<p style="font-size: 0.75rem; opacity: 0.7;">ou cliquez pour parcourir</p>
 						</div>
-						<img id="image-preview" src="" alt="Aperçu" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<img id="image-preview" src="" alt="Aperçu" style="display: none; width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
 					</div>
 
 					<div class="upload-control">
@@ -155,6 +156,17 @@
 				transform: translateY(0);
 			}
 		}
+
+		.drag-drop-zone.drag-over {
+			border-color: var(--color-primary) !important;
+			background: rgba(37, 99, 235, 0.05) !important;
+			transform: scale(1.02);
+		}
+
+		.drag-drop-zone:hover {
+			border-color: var(--color-primary);
+			background: rgba(37, 99, 235, 0.02);
+		}
 	</style>
 
 	<script>
@@ -166,37 +178,50 @@
 			const imagePlaceholder = document.getElementById('image-placeholder');
 			const imageContainer = document.getElementById('image-preview-container');
 
+			// Fonction pour traiter un fichier image
+			function handleImageFile(file) {
+				if (!file) return false;
+
+				// Vérifier que c'est une image
+				if (!file.type.match('image.*')) {
+					alert('Veuillez sélectionner un fichier image valide.');
+					return false;
+				}
+
+				// Mettre à jour le champ input file
+				const dataTransfer = new DataTransfer();
+				dataTransfer.items.add(file);
+				imageInput.files = dataTransfer.files;
+
+				// Créer un FileReader pour lire le fichier
+				const reader = new FileReader();
+				
+				reader.onload = function(e) {
+					// Afficher l'image prévisualisée
+					imagePreview.src = e.target.result;
+					imagePreview.style.display = 'block';
+					if (imagePlaceholder) {
+						imagePlaceholder.style.display = 'none';
+					}
+					imageContainer.style.border = '2px solid var(--color-primary)';
+					imageContainer.classList.remove('drag-over');
+				};
+				
+				reader.onerror = function() {
+					alert('Erreur lors de la lecture du fichier.');
+					imageInput.value = '';
+				};
+				
+				reader.readAsDataURL(file);
+				return true;
+			}
+
 			if (imageInput && imagePreview && imageContainer) {
+				// Gestion du changement de fichier via input
 				imageInput.addEventListener('change', function(e) {
 					const file = e.target.files[0];
-					
 					if (file) {
-						// Vérifier que c'est une image
-						if (!file.type.match('image.*')) {
-							alert('Veuillez sélectionner un fichier image valide.');
-							imageInput.value = '';
-							return;
-						}
-
-						// Créer un FileReader pour lire le fichier
-						const reader = new FileReader();
-						
-						reader.onload = function(e) {
-							// Afficher l'image prévisualisée
-							imagePreview.src = e.target.result;
-							imagePreview.style.display = 'block';
-							if (imagePlaceholder) {
-								imagePlaceholder.style.display = 'none';
-							}
-							imageContainer.style.border = '2px solid var(--color-primary)';
-						};
-						
-						reader.onerror = function() {
-							alert('Erreur lors de la lecture du fichier.');
-							imageInput.value = '';
-						};
-						
-						reader.readAsDataURL(file);
+						handleImageFile(file);
 					} else {
 						// Si aucun fichier n'est sélectionné, réinitialiser
 						imagePreview.style.display = 'none';
@@ -204,6 +229,48 @@
 							imagePlaceholder.style.display = 'block';
 						}
 						imageContainer.style.border = '2px dashed #cbd5e0';
+					}
+				});
+
+				// Gestion du drag and drop
+				['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+					imageContainer.addEventListener(eventName, preventDefaults, false);
+				});
+
+				function preventDefaults(e) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+
+				// Ajouter la classe drag-over quand on survole avec un fichier
+				['dragenter', 'dragover'].forEach(eventName => {
+					imageContainer.addEventListener(eventName, function() {
+						imageContainer.classList.add('drag-over');
+					}, false);
+				});
+
+				// Retirer la classe drag-over quand on quitte la zone
+				['dragleave', 'drop'].forEach(eventName => {
+					imageContainer.addEventListener(eventName, function() {
+						imageContainer.classList.remove('drag-over');
+					}, false);
+				});
+
+				// Gérer le drop
+				imageContainer.addEventListener('drop', function(e) {
+					const dt = e.dataTransfer;
+					const files = dt.files;
+					
+					if (files.length > 0) {
+						handleImageFile(files[0]);
+					}
+				}, false);
+
+				// Permettre de cliquer sur la zone pour ouvrir le sélecteur de fichier
+				imageContainer.addEventListener('click', function(e) {
+					// Ne pas déclencher si on clique sur l'image prévisualisée
+					if (e.target !== imagePreview) {
+						imageInput.click();
 					}
 				});
 			}
