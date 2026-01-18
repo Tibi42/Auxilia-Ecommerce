@@ -72,41 +72,4 @@ class ProfileController extends AbstractController
             'user' => $user,
         ]);
     }
-
-    /**
-     * Supprime le compte utilisateur
-     */
-    /**
-     * Supprime le compte utilisateur
-     */
-    #[Route('/profile/delete', name: 'app_profile_delete', methods: ['POST'])]
-    public function delete(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        if ($this->isCsrfTokenValid('delete_account', $request->request->get('_token'))) {
-            $password = $request->request->get('password');
-
-            // Vérification du mot de passe
-            if (!$password || !$passwordHasher->isPasswordValid($user, $password)) {
-                $this->addFlash('error', 'Mot de passe incorrect. Impossible de supprimer le compte.');
-                return $this->redirectToRoute('app_profile');
-            }
-
-            $entityManager->remove($user);
-            $entityManager->flush();
-
-            $request->getSession()->invalidate();
-            $this->container->get('security.token_storage')->setToken(null);
-
-            $this->addFlash('success', 'Votre compte a été supprimé avec succès.');
-            return $this->redirectToRoute('app_home');
-        }
-
-        $this->addFlash('error', 'Token CSRF invalide.');
-        return $this->redirectToRoute('app_profile');
-    }
 }

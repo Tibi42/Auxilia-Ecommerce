@@ -105,10 +105,10 @@
 						<div>
 							{% for role in user.roles %}
 								<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-																														                                    {% if role == 'ROLE_ADMIN' %}
-																														                                        background-color: #fef3c7; color: #d97706;
-																														                                    {% else %}
-																														                                        background-color: #dbeafe; color: #1e40af;
+																				          										                          {% if role == 'ROLE_ADMIN' %}
+																							          							                              background-color: #fef3c7; color: #d97706;
+																									          					                          {% else %}
+																												          		                              background-color: #dbeafe; color: #1e40af;
 																														                                    {% endif %}">
 									{{ role }}
 								</span>
@@ -207,26 +207,6 @@
 							</a>
 						{% endif %}
 					</div>
-				</div>
-
-				<!-- Zone de danger -->
-				<div style="background-color: #fee2e2; border: 1px solid #fecaca; border-radius: 12px; padding: 2rem; margin-top: 2rem;">
-					<h3 style="font-size: 1.25rem; color: #dc2626; margin-bottom: 1rem;">Zone Dangereuse</h3>
-					<p style="color: #991b1b; font-size: 0.9rem; margin-bottom: 1rem;">
-						La suppression de votre compte est définitive. Toutes vos données seront effacées.
-					</p>
-					<form method="post" action="{{ path('app_profile_delete') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.');">
-						<div style="margin-bottom: 1rem;">
-							<label for="password" style="display: block; color: #991b1b; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500;">
-								Veuillez saisir votre mot de passe pour confirmer :
-							</label>
-							<input type="password" name="password" id="password" required class="form-control" placeholder="Votre mot de passe actuel" style="border-color: #fecaca;">
-						</div>
-						<input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
-						<button type="submit" class="btn" style="background-color: #dc2626; color: white; width: 100%; border: none; padding: 0.75rem;">
-							🗑️ Supprimer mon compte
-						</button>
-					</form>
 				</div>
 			</div>
 		</div>

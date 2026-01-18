@@ -329,7 +329,7 @@ body {
 /* Products Grid */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 1.35rem;
     margin: 2rem 0;
 }
@@ -1898,11 +1898,6 @@ input[type="radio"] {
 
 /* Centered Product Grid for Homepage */
 .products-grid-centered {
-    display: flex !important;
-    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
     justify-content: center;
-}
-
-.products-grid-centered .product-card {
-    width: 280px;
 }
