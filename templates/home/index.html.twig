@@ -48,6 +48,27 @@
 		</div>
 	</section>
 
+	<section class="partners">
+		<div class="container">
+			<h3 class="partners-title">Ils nous font confiance</h3>
+			<div class="partners-wrapper">
+				<div class="partners-track">
+					{% for partner in partners %}
+						<div class="partner-item">
+							<img src="{{ partner.logo }}" alt="{{ partner.name }}" title="{{ partner.name }}">
+						</div>
+					{% endfor %}
+					{# Double for infinite scroll effect if needed, but for now simple grid/flex #}
+					{% for partner in partners %}
+						<div class="partner-item">
+							<img src="{{ partner.logo }}" alt="{{ partner.name }}" title="{{ partner.name }}">
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<section class="featured-products">
 		<div class="container">
 			<h2>Nos produits en vedette</h2>
