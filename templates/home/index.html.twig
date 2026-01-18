@@ -64,6 +64,47 @@
 		</div>
 	</section>
 
+	<section class="testimonials">
+		<div class="container">
+			<div class="section-header">
+				<h2>Avis de nos clients</h2>
+				<p>Ce que ceux qui nous font confiance disent de nous</p>
+			</div>
+			<div class="testimonials-carousel" data-controller="carousel" data-carousel-auto-play-value="true" data-carousel-interval-value="4000">
+				<div class="testimonials-slides">
+					{% for testimonial in testimonials %}
+						<div class="testimonial-card {{ loop.first ? 'active' : '' }}" data-carousel-target="slide">
+							<div class="testimonial-rating">
+								{% for i in 1..5 %}
+									<span class="star {{ i <= testimonial.rating ? 'filled' : '' }}">★</span>
+								{% endfor %}
+							</div>
+							<div class="testimonial-content">
+								<p>"{{ testimonial.content }}"</p>
+							</div>
+							<div class="testimonial-author">
+								<img src="{{ testimonial.avatar }}" alt="{{ testimonial.author }}" class="author-avatar">
+								<div class="author-info">
+									<span class="author-name">{{ testimonial.author }}</span>
+									<span class="testimonial-date">{{ testimonial.date }}</span>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+
+				<button class="testimonial-prev" data-action="click->carousel#previous">‹</button>
+				<button class="testimonial-next" data-action="click->carousel#next">›</button>
+
+				<div class="carousel-indicators">
+					{% for testimonial in testimonials %}
+						<span class="indicator {{ loop.first ? 'active' : '' }}" data-action="click->carousel#goTo" data-index="{{ loop.index0 }}"></span>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<section class="about">
 		<div class="container">
 			<div class="about-content">
