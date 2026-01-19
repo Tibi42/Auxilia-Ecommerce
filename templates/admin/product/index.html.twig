@@ -64,7 +64,6 @@
 					<table style="width: 100%; border-collapse: collapse;">
 						<thead>
 							<tr style="border-bottom: 2px solid #e0e0e0;">
-								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Vedette</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Image</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">ID</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Nom</th>
@@ -76,14 +75,7 @@
 						</thead>
 						<tbody>
 							{% for product in products %}
-								<tr style="border-bottom: 1px solid #e0e0e0;" data-controller="featured-toggle">
-									<td style="padding: 1rem; text-align: center;">
-										<form method="post" action="{{ path('app_admin_product_toggle_featured', {'id': product.id}) }}" style="margin: 0;" data-action="submit->featured-toggle#toggle">
-											<button type="submit" style="background: none; border: none; cursor: pointer; padding: 0; outline: none;">
-												<i class="fa{% if product.isFeatured %}s{% else %}r{% endif %} fa-star" style="color: {% if product.isFeatured %}#fbc02d{% else %}#ccc{% endif %}; font-size: 1.25rem;" title="{% if product.isFeatured %}Retirer des vedettes{% else %}Mettre en vedette{% endif %}"></i>
-											</button>
-										</form>
-									</td>
+								<tr style="border-bottom: 1px solid #e0e0e0;">
 									<td style="padding: 1rem;">
 										{% if product.imageName %}
 											<img src="{{ asset('uploads/products/' ~ product.imageName) }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
@@ -105,13 +97,13 @@
 										€</td>
 									<td style="padding: 1rem;">
 										<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-																																				                                            {% if product.stock < 10 %}
-																																				                                                background-color: #fee2e2; color: #dc2626;
-																																				                                            {% elseif product.stock < 30 %}
-																																				                                                background-color: #fef3c7; color: #d97706;
-																																				                                            {% else %}
-																																				                                                background-color: #d1fae5; color: #059669;
-																																				                                            {% endif %}">
+																								                                            {% if product.stock < 10 %}
+																								                                                background-color: #fee2e2; color: #dc2626;
+																								                                            {% elseif product.stock < 30 %}
+																								                                                background-color: #fef3c7; color: #d97706;
+																								                                            {% else %}
+																								                                                background-color: #d1fae5; color: #059669;
+																								                                            {% endif %}">
 											{{ product.stock ?? 'N/A' }}
 										</span>
 									</td>

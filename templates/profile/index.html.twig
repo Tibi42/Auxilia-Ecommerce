@@ -105,11 +105,11 @@
 						<div>
 							{% for role in user.roles %}
 								<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-										                                    {% if role == 'ROLE_ADMIN' %}
-										                                        background-color: #fef3c7; color: #d97706;
-										                                    {% else %}
-										                                        background-color: #dbeafe; color: #1e40af;
-										                                    {% endif %}">
+																				          										                          {% if role == 'ROLE_ADMIN' %}
+																							          							                              background-color: #fef3c7; color: #d97706;
+																									          					                          {% else %}
+																												          		                              background-color: #dbeafe; color: #1e40af;
+																														                                    {% endif %}">
 									{{ role }}
 								</span>
 							{% endfor %}
