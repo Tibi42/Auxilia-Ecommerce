@@ -1,42 +1,37 @@
 import { Controller } from '@hotwired/stimulus';
+import { Modal } from 'bootstrap';
 
-/*
- * This is an example Stimulus controller!
- *
- * Any element with a data-controller="modal" attribute will cause
- * this controller to be executed. The name "modal" comes from the filename:
- * modal_controller.js -> "modal"
- *
- * Delete this file or adapt it for your use!
- */
 export default class extends Controller {
-    static targets = ["dialog", "title", "description", "price", "addToCartLink"];
-
-    connect() {
-        console.log("Modal controller connected");
-    }
+    static targets = ["dialog", "title", "description", "price", "addToCartLink", "image", "placeholder"];
 
     open(event) {
         event.preventDefault();
         const button = event.currentTarget;
         const data = button.dataset;
 
+        // Populate content
         this.titleTarget.textContent = data.name;
-        this.descriptionTarget.textContent = data.description || "Aucune description disponible.";
+        this.descriptionTarget.textContent = data.description || "Aucune description disponible pour ce produit.";
         this.priceTarget.textContent = data.price + " €";
         this.addToCartLinkTarget.setAttribute('href', data.addToCartUrl);
 
-        this.dialogTarget.classList.add('active');
-    }
-
-    close(event) {
-        if (event) event.preventDefault();
-        this.dialogTarget.classList.remove('active');
-    }
-
-    closeBackground(event) {
-        if (event.target === this.dialogTarget) {
-            this.close();
+        // Handle Image
+        if (data.image) {
+            this.imageTarget.src = data.image;
+            this.imageTarget.alt = data.name;
+            this.imageTarget.classList.remove('d-none');
+            this.placeholderTarget.classList.add('d-none');
+        } else {
+            this.imageTarget.classList.add('d-none');
+            this.placeholderTarget.classList.remove('d-none');
         }
+
+        // Show Modal
+        const modal = Modal.getOrCreateInstance(this.dialogTarget);
+        modal.show();
+    }
+
+    stopPropagation(event) {
+        event.stopPropagation();
     }
 }

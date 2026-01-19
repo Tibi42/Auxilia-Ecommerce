@@ -1,5 +1,6 @@
 {# Composant Carte Produit : affiche les informations résumées d'un produit (image, nom, prix, actions) #}
-<div class="card h-100 shadow-sm border-0 product-card-hover">
+<div class="card h-100 shadow-sm border-0 product-card-hover cursor-pointer" data-action="click->modal#open" data-name="{{ product.name }}" data-description="{{ product.description }}" data-price="{{ product.price }}" data-image="{% if product.imageName %}{{ asset('uploads/products/' ~ product.imageName) }}{% endif %}" data-add-to-cart-url="{{ path('cart_add', {id: product.id}) }}" style="cursor: pointer;">
+
 	<div class="card-img-top bg-light d-flex align-items-center justify-content-center overflow-hidden" style="height: 160px;">
 		{% if product.imageName %}
 			<img src="{{ asset('uploads/products/' ~ product.imageName) }}" alt="{{ product.name }}" class="img-fluid w-100 h-100 object-fit-cover" loading="lazy">
@@ -23,10 +24,10 @@
 			</div>
 
 			<div class="d-flex gap-1">
-				<button class="btn btn-outline-primary flex-grow-1 btn-sm py-1 px-0" style="font-size: 0.75rem;" data-action="click->modal#open" data-name="{{ product.name }}" data-description="{{ product.description }}" data-price="{{ product.price }}" data-add-to-cart-url="{{ path('cart_add', {id: product.id}) }}">
+				<button class="btn btn-outline-primary flex-grow-1 btn-sm py-1 px-0" style="font-size: 0.75rem;">
 					Détails
 				</button>
-				<a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-primary btn-sm py-1 px-2" title="Ajouter au panier">
+				<a href="{{ path('cart_add', {id: product.id}) }}" class="btn btn-primary btn-sm py-1 px-2" title="Ajouter au panier" data-action="click->modal#stopPropagation">
 					<i class="fas fa-cart-plus fa-xs"></i>
 				</a>
 			</div>

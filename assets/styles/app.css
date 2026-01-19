@@ -917,6 +917,17 @@ input[type="radio"] {
     justify-content: center;
 }
 
+/* Product Modal Enhancements */
+.product-modal-image-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.product-modal-image-container img {
+    max-height: 400px;
+}
+
 .pagination li,
 .page-item {
     margin: 0;
