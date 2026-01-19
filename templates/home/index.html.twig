@@ -5,33 +5,33 @@
 {% endblock %}
 
 {% block body %}
-	<section class="hero position-relative overflow-hidden bg-primary text-white" style="min-height: 60vh;">
-		<div class="carousel slide h-100" data-controller="carousel" id="heroCarousel">
+	<section class="hero position-relative overflow-hidden bg-primary text-white" style="min-height: 500px;">
+		<div class="carousel slide h-100" data-bs-ride="carousel" id="heroCarousel">
 			<div class="carousel-inner h-100">
-				<div class="carousel-item active h-100" data-carousel-target="slide" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80') center/cover no-repeat; min-height: 60vh;">
+				<div class="carousel-item active h-100" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80') center/cover no-repeat; min-height: 500px;">
 					<div class="container h-100 d-flex align-items-center">
 						<div class="col-md-8 col-lg-6 py-5">
-							<h1 class="display-3 fw-bold mb-4">Bienvenue sur Auxilia E-commerce</h1>
-							<p class="lead mb-5">Découvrez notre sélection de produits de qualité supérieure pour tous vos besoins.</p>
-							<a href="{{ path('app_product') }}" class="btn btn-primary btn-lg px-4 me-md-2">Découvrir nos produits</a>
+							<h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">Bienvenue sur Auxilia E-commerce</h1>
+							<p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">Découvrez notre sélection de produits de qualité supérieure pour tous vos besoins.</p>
+							<a href="{{ path('app_product') }}" class="btn btn-primary btn-lg px-4 me-md-2 rounded-pill shadow">Découvrir nos produits</a>
 						</div>
 					</div>
 				</div>
-				<div class="carousel-item h-100" data-carousel-target="slide" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80') center/cover no-repeat; min-height: 60vh;">
+				<div class="carousel-item h-100" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80') center/cover no-repeat; min-height: 500px;">
 					<div class="container h-100 d-flex align-items-center">
 						<div class="col-md-8 col-lg-6 py-5">
 							<h1 class="display-3 fw-bold mb-4">Livraison gratuite</h1>
 							<p class="lead mb-5">À partir de 50€ d'achat, profitez de la livraison gratuite partout en France.</p>
-							<a href="{{ path('app_product') }}" class="btn btn-primary btn-lg px-4 me-md-2">En savoir plus</a>
+							<a href="{{ path('app_product') }}" class="btn btn-primary btn-lg px-4 me-md-2 rounded-pill shadow">En savoir plus</a>
 						</div>
 					</div>
 				</div>
 			</div>
-			<button class="carousel-control-prev" type="button" data-action="click->carousel#previous">
+			<button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Précédent</span>
 			</button>
-			<button class="carousel-control-next" type="button" data-action="click->carousel#next">
+			<button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Suivant</span>
 			</button>
@@ -99,34 +99,45 @@
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-lg-8">
-					<div class="testimonials-carousel" data-controller="carousel" data-carousel-auto-play-value="true" data-carousel-interval-value="4000">
-						<div class="testimonials-slides position-relative" style="min-height: 300px;">
+					<div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+						<div class="carousel-inner" style="min-height: 280px;">
 							{% for testimonial in testimonials %}
-								<div class="testimonial-card {{ loop.first ? 'active' : '' }} border-0 shadow-sm p-4 bg-white rounded-4" data-carousel-target="slide" style="transition: all 0.5s ease-in-out;">
-									<div class="text-warning mb-3">
-										{% for i in 1..5 %}
-											<i class="fas fa-star {{ i <= testimonial.rating ? '' : 'opacity-25' }}"></i>
-										{% endfor %}
-									</div>
-									<blockquote class="blockquote">
-										<p class="fs-5 fw-italic">"{{ testimonial.content }}"</p>
-									</blockquote>
-									<div class="d-flex align-items-center mt-4">
-										<img src="{{ testimonial.avatar }}" alt="{{ testimonial.author }}" class="rounded-circle border border-2 border-primary me-3" width="60" height="60" loading="lazy">
-										<div>
-											<h6 class="mb-0 fw-bold">{{ testimonial.author }}</h6>
-											<small class="text-muted">{{ testimonial.date }}</small>
+								<div class="carousel-item {{ loop.first ? 'active' : '' }}">
+									<div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4 mx-1">
+										<div class="text-warning mb-3">
+											{% for i in 1..5 %}
+												<i class="fas fa-star {{ i <= testimonial.rating ? '' : 'text-muted opacity-25' }}"></i>
+											{% endfor %}
+										</div>
+										<blockquote class="blockquote">
+											<p class="fs-4 fw-italic text-dark mb-4">"{{ testimonial.content }}"</p>
+										</blockquote>
+										<div class="d-flex align-items-center mt-auto">
+											<img src="{{ testimonial.avatar }}" alt="{{ testimonial.author }}" class="rounded-circle border border-3 border-primary-subtle me-3" width="60" height="60" loading="lazy">
+											<div>
+												<h6 class="mb-0 fw-bold">{{ testimonial.author }}</h6>
+												<small class="text-muted">{{ testimonial.date }}</small>
+											</div>
 										</div>
 									</div>
 								</div>
 							{% endfor %}
 						</div>
 
-						<div class="d-flex justify-content-center gap-2 mt-4">
+						<div class="carousel-indicators position-relative mt-5 mb-0">
 							{% for testimonial in testimonials %}
-								<button class="btn btn-xs rounded-circle {{ loop.first ? 'btn-primary' : 'btn-outline-primary' }} p-1" style="width: 10px; height: 10px;" data-action="click->carousel#goTo" data-index="{{ loop.index0 }}"></button>
+								<button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ loop.index0 }}" class="{{ loop.first ? 'active' : '' }} bg-primary rounded-circle" style="width: 12px; height: 12px; margin: 0 5px;" aria-current="{{ loop.first ? 'true' : 'false' }}" aria-label="Slide {{ loop.index }}"></button>
 							{% endfor %}
 						</div>
+
+						<button class="carousel-control-prev d-none d-md-flex" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev" style="width: 5%; left: -60px;">
+							<span class="carousel-control-prev-icon rounded-circle bg-primary p-3" aria-hidden="true"></span>
+							<span class="visually-hidden">Précédent</span>
+						</button>
+						<button class="carousel-control-next d-none d-md-flex" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next" style="width: 5%; right: -60px;">
+							<span class="carousel-control-next-icon rounded-circle bg-primary p-3" aria-hidden="true"></span>
+							<span class="visually-hidden">Suivant</span>
+						</button>
 					</div>
 				</div>
 			</div>
