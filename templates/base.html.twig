@@ -40,11 +40,12 @@
 		{# Composant En-tête : contient le bandeau d'info, la navigation et les actions utilisateur #}
 		{% include 'components/header.html.twig' %}
 
-		<main>
+		<main class="container my-4">
 			{% for label, messages in app.flashes %}
 				{% for message in messages %}
-					<div class="flash flash-{{ label }}">
+					<div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'success' ? 'success' : (label == 'warning' ? 'warning' : 'info')) }} alert-dismissible fade show" role="alert">
 						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				{% endfor %}
 			{% endfor %}

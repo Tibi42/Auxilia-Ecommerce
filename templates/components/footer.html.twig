@@ -1,66 +1,101 @@
-﻿<footer class="footer">
+﻿<footer class="bg-dark text-white pt-5 pb-3">
 	<div class="container">
-		<div class="footer-content">
-			<div class="footer-section">
-				<h3>Auxilia E-commerce</h3>
-				<p>123 Rue du Commerce<br>75000 Paris</p>
-				<p>Tél : +33 (0) 1 23 45 67 89</p>
-				<div class="footer-socials">
-					<a href="#" target="_blank" title="Facebook">
+		<div class="row g-4 mb-4">
+			<div class="col-lg-4 col-md-6">
+				<h4 class="fw-bold mb-4 text-primary">Auxilia E-commerce</h4>
+				<p class="text-white-50 mb-3">Votre boutique de confiance pour tous vos besoins du quotidien. Qualité, rapidité et satisfaction garantie.</p>
+				<p class="text-white-50">
+					<i class="fas fa-map-marker-alt me-2 text-primary"></i>
+					123 Rue du Commerce, 75000 Paris</p>
+				<p class="text-white-50">
+					<i class="fas fa-phone me-2 text-primary"></i>
+					+33 (0) 1 23 45 67 89</p>
+				<div class="d-flex gap-3 mt-4">
+					<a href="#" class="btn btn-outline-light btn-sm rounded-circle" target="_blank" title="Facebook">
 						<i class="fab fa-facebook-f"></i>
 					</a>
-					<a href="#" target="_blank" title="Instagram">
+					<a href="#" class="btn btn-outline-light btn-sm rounded-circle" target="_blank" title="Instagram">
 						<i class="fab fa-instagram"></i>
 					</a>
-					<a href="#" target="_blank" title="Twitter">
+					<a href="#" class="btn btn-outline-light btn-sm rounded-circle" target="_blank" title="Twitter">
 						<i class="fab fa-x-twitter"></i>
 					</a>
 				</div>
 			</div>
-			<div class="footer-section">
-				<h4>Catégories</h4>
-				<ul>
-					<li><ahref="{{path('app_product')}}">Tous les produits</a></li>
-					<li><ahref="{{path('app_product')}}">Électronique</a></li>
-					<li><ahref="{{path('app_product')}}">Vêtements</a></li>
-					<li><ahref="{{path('app_product')}}">Maison</a></li>
-					<li><ahref="{{path('app_product')}}">Sport</a></li>
+			<div class="col-lg-2 col-md-6">
+				<h5 class="fw-bold mb-4">Catégories</h5>
+				<ul class="list-unstyled">
+					<li class="mb-2">
+						<a href="{{ path('app_product') }}" class="text-white-50 text-decoration-none hover-white">Tous les produits</a>
+					</li>
+					<li class="mb-2">
+						<a href="{{ path('app_product') }}" class="text-white-50 text-decoration-none hover-white">Électronique</a>
+					</li>
+					<li class="mb-2">
+						<a href="{{ path('app_product') }}" class="text-white-50 text-decoration-none hover-white">Vêtements</a>
+					</li>
+					<li class="mb-2">
+						<a href="{{ path('app_product') }}" class="text-white-50 text-decoration-none hover-white">Maison</a>
+					</li>
 				</ul>
 			</div>
-			<div class="footer-section">
-				<h4>Informations</h4>
-				<ul>
-					<li><a href="#">Livraison</a></li>
-					<li><ahref="{{path('app_contact')}}">Contact</a></li>
-					<li><ahref="{{path('app_about')}}">À propos</a></li>
-					<li><a href="#">Mentions légales</a></li>
+			<div class="col-lg-2 col-md-6">
+				<h5 class="fw-bold mb-4">Informations</h5>
+				<ul class="list-unstyled">
+					<li class="mb-2">
+						<a href="#" class="text-white-50 text-decoration-none hover-white">Livraison</a>
+					</li>
+					<li class="mb-2">
+						<a href="{{ path('app_contact') }}" class="text-white-50 text-decoration-none hover-white">Contact</a>
+					</li>
+					<li class="mb-2">
+						<a href="{{ path('app_about') }}" class="text-white-50 text-decoration-none hover-white">À propos</a>
+					</li>
+					<li class="mb-2">
+						<a href="#" class="text-white-50 text-decoration-none hover-white">Mentions légales</a>
+					</li>
 				</ul>
 			</div>
-			<div class="footer-section">
-				<h4>Votre compte</h4>
-				<ul>
+			<div class="col-lg-4 col-md-6">
+				<h5 class="fw-bold mb-4">Votre compte</h5>
+				<ul class="list-unstyled">
 					{% if app.user %}
-						<li>
-							<a href="{{ path('app_profile') }}">Mon compte</a>
+						<li class="mb-2">
+							<a href="{{ path('app_profile') }}" class="text-white-50 text-decoration-none hover-white">Mon compte</a>
 						</li>
-						<li>
-							<a href="{{ path('app_orders') }}">Mes commandes</a>
+						<li class="mb-2">
+							<a href="{{ path('app_orders') }}" class="text-white-50 text-decoration-none hover-white">Mes commandes</a>
 						</li>
 					{% else %}
-						<li>
-							<a href="{{ path('app_login') }}">Connexion</a>
+						<li class="mb-2">
+							<a href="{{ path('app_login') }}" class="text-white-50 text-decoration-none hover-white">Connexion</a>
 						</li>
-						<li>
-							<a href="{{ path('app_register') }}">Inscription</a>
+						<li class="mb-2">
+							<a href="{{ path('app_register') }}" class="text-white-50 text-decoration-none hover-white">Inscription</a>
 						</li>
 					{% endif %}
 				</ul>
+				<div class="mt-4">
+					<h6 class="fw-bold mb-3">Newsletter</h6>
+					<form class="input-group">
+						<input type="email" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="Votre email">
+						<button class="btn btn-primary btn-sm" type="button">S'inscrire</button>
+					</form>
+				</div>
 			</div>
 		</div>
-		<div class="footer-bottom">
-			<p>&copy;
-				{{ 'now'|date('Y') }}
-				Auxilia E-commerce. Tous droits réservés.</p>
+		<hr class="border-secondary mb-4">
+		<div class="row align-items-center">
+			<div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+				<p class="text-white-50 small mb-0">&copy;
+					{{ 'now'|date('Y') }}
+					Auxilia E-commerce. Tous droits réservés.</p>
+			</div>
+			<div class="col-md-6 text-center text-md-end">
+				<img src="https://vectorlogo.zone/logos/visa/visa-ar21.svg" alt="Visa" height="20" class="me-3 opacity-50">
+				<img src="https://vectorlogo.zone/logos/mastercard/mastercard-ar21.svg" alt="Mastercard" height="20" class="me-3 opacity-50">
+				<img src="https://vectorlogo.zone/logos/paypal/paypal-ar21.svg" alt="Paypal" height="20" class="opacity-50">
+			</div>
 		</div>
 	</div>
 </footer>

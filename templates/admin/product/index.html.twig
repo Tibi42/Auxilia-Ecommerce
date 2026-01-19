@@ -97,13 +97,13 @@
 										€</td>
 									<td style="padding: 1rem;">
 										<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-																								                                            {% if product.stock < 10 %}
-																								                                                background-color: #fee2e2; color: #dc2626;
-																								                                            {% elseif product.stock < 30 %}
-																								                                                background-color: #fef3c7; color: #d97706;
-																								                                            {% else %}
-																								                                                background-color: #d1fae5; color: #059669;
-																								                                            {% endif %}">
+																																				                                            {% if product.stock < 10 %}
+																																				                                                background-color: #fee2e2; color: #dc2626;
+																																				                                            {% elseif product.stock < 30 %}
+																																				                                                background-color: #fef3c7; color: #d97706;
+																																				                                            {% else %}
+																																				                                                background-color: #d1fae5; color: #059669;
+																																				                                            {% endif %}">
 											{{ product.stock ?? 'N/A' }}
 										</span>
 									</td>

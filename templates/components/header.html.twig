@@ -1,65 +1,69 @@
 <header class="header">
-	<div class="header-top">
-		<div class="container header-top-content">
-			<p class="header-top-text">Livraison gratuite à partir de 50€ d'achat</p>
-			<div class="header-socials">
-				<a href="#" target="_blank" title="Facebook">
+	<div class="header-top bg-primary text-white py-2">
+		<div class="container d-flex justify-content-between align-items-center">
+			<p class="mb-0 small">Livraison gratuite à partir de 50€ d'achat</p>
+			<div class="header-socials d-flex gap-3">
+				<a href="#" class="text-white" target="_blank" title="Facebook">
 					<i class="fab fa-facebook-f"></i>
 				</a>
-				<a href="#" target="_blank" title="Instagram">
+				<a href="#" class="text-white" target="_blank" title="Instagram">
 					<i class="fab fa-instagram"></i>
 				</a>
-				<a href="#" target="_blank" title="Twitter">
+				<a href="#" class="text-white" target="_blank" title="Twitter">
 					<i class="fab fa-x-twitter"></i>
 				</a>
 			</div>
 		</div>
 	</div>
-	<nav class="navbar">
+	<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
 		<div class="container">
-			<a href="{{ path('app_home') }}" class="logo">Auxilia E-commerce</a>
-			<button class="menu-toggle" onclick="const menu = document.querySelector('.nav-menu'); const btn = this; menu.classList.toggle('active'); btn.classList.toggle('active');" aria-label="Menu">
-				<span class="hamburger-line"></span>
-				<span class="hamburger-line"></span>
-				<span class="hamburger-line"></span>
+			<a href="{{ path('app_home') }}" class="navbar-brand fw-bold text-primary">Auxilia E-commerce</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
 			</button>
-			<ul class="nav-menu">
-				<li>
-					<a href="{{ path('app_home') }}">Accueil</a>
-				</li>
-				<li>
-					<a href="{{ path('app_product') }}">Produits</a>
-				</li>
-				<li>
-					<a href="{{ path('app_about') }}">À propos</a>
-				</li>
-				<li>
-					<a href="{{ path('app_contact') }}">Contact</a>
-				</li>
-			</ul>
-			<div class="header-actions">
-				<div class="search-container" data-controller="live-search" data-live-search-url-value="{{ path('api_product_search') }}" style="position: relative;">
-					<form action="{{ path('app_product') }}" method="get" class="search-form" style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; margin-right: 1rem;">
-						<input type="text" name="q" placeholder="Rechercher..." data-live-search-target="input" data-action="input->live-search#onSearch blur->live-search#hideResults" style="border: none; padding: 0.5rem; outline: none;" autocomplete="off">
-						<button type="submit" style="background: none; border: none; padding: 0.5rem; cursor: pointer;">🔍</button>
-					</form>
-					<div class="search-results" data-live-search-target="results"></div>
+			<div class="collapse navbar-collapse" id="mainNavbar">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_product') }}">Produits</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_about') }}">À propos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('app_contact') }}">Contact</a>
+					</li>
+				</ul>
+				<div class="d-flex align-items-center gap-3">
+					<div class="search-container position-relative" data-controller="live-search" data-live-search-url-value="{{ path('api_product_search') }}">
+						<form action="{{ path('app_product') }}" method="get" class="d-flex mb-0">
+							<div class="input-group input-group-sm">
+								<input type="text" name="q" class="form-control" placeholder="Rechercher..." data-live-search-target="input" data-action="input->live-search#onSearch blur->live-search#hideResults" autocomplete="off">
+								<button class="btn btn-outline-primary" type="submit">🔍</button>
+							</div>
+						</form>
+						<div class="search-results position-absolute w-100 shadow-sm bg-white" data-live-search-target="results" style="z-index: 1050; top: 100%;"></div>
+					</div>
+					{% if app.user %}
+						{% if is_granted('ROLE_ADMIN') %}
+							<a href="{{ path('app_admin_dashboard') }}" class="btn btn-sm btn-primary text-white">Admin</a>
+						{% endif %}
+						<a href="{{ path('app_profile') }}" class="text-dark text-decoration-none" title="Mon compte">👤</a>
+						<a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-danger">Déconnexion</a>
+					{% else %}
+						<a href="{{ path('app_login') }}" class="btn btn-sm btn-outline-primary">Connexion</a>
+					{% endif %}
+					<a href="{{ path('cart_index') }}" class="position-relative text-dark text-decoration-none" title="Voir mon panier">
+						<i class="fas fa-shopping-cart fa-lg"></i>
+						{% if cart_count() > 0 %}
+							<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.6rem;">
+								{{ cart_count() }}
+							</span>
+						{% endif %}
+					</a>
 				</div>
-				{% if app.user %}
-					{% if is_granted('ROLE_ADMIN') %}
-						<a href="{{ path('app_admin_dashboard') }}" class="login-link" style="background-color: var(--color-primary); color: white;">Admin</a>
-					{% endif %}
-					<a href="{{ path('app_profile') }}" class="account-icon">👤</a>
-					<a href="{{ path('app_logout') }}" class="logout-link">Déconnexion</a>
-				{% else %}
-					<a href="{{ path('app_login') }}" class="login-link">Connexion</a>
-				{% endif %}
-				<a href="{{ path('cart_index') }}" class="cart-icon" title="Voir mon panier">
-					<i class="fas fa-shopping-cart"></i>
-					{% if cart_count() > 0 %}
-						<span class="cart-count">{{ cart_count() }}</span>
-					{% endif %}
-				</a>
 			</div>
 		</div>
 	</nav>
