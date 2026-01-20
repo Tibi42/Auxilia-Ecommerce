@@ -33,7 +33,7 @@ final class ProductController extends AbstractController
     public function index(ProductRepository $productRepository, CategoryRepository $categoryRepository, PaginatorInterface $paginator, Request $request): Response
     {
         // Récupération des paramètres de l'URL (limite, tri, recherche, catégorie)
-        $limit = $request->query->getInt('limit', 9);
+        $limit = $request->query->getInt('limit', 12);
         $sort = $request->query->get('sort', 'p.price');
         $direction = $request->query->get('direction', 'asc');
         $q = $request->query->get('q');
