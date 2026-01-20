@@ -22,15 +22,15 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function findAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null): array
+    public function findAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null, ?bool $isFeatured = null): array
     {
-        return $this->getQueryBuilderAllByCategoryAndStock($category, $stockFilter)->getQuery()->getResult();
+        return $this->getQueryBuilderAllByCategoryAndStock($category, $stockFilter, $isFeatured)->getQuery()->getResult();
     }
 
     /**
-     * Retourne le QueryBuilder pour tous les produits filtrés par catégorie et/ou stock
+     * Retourne le QueryBuilder pour tous les produits filtrés par catégorie, stock et/ou état "vedette"
      */
-    public function getQueryBuilderAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null)
+    public function getQueryBuilderAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null, ?bool $isFeatured = null)
     {
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.id', 'DESC');
@@ -60,6 +60,11 @@ class ProductRepository extends ServiceEntityRepository
                     $qb->andWhere('p.stock IS NULL OR p.stock = 0');
                     break;
             }
+        }
+
+        if ($isFeatured !== null) {
+            $qb->andWhere('p.isFeatured = :isFeatured')
+               ->setParameter('isFeatured', $isFeatured);
         }
 
         return $qb;

@@ -36,9 +36,15 @@ final class ProductController extends AbstractController
         // Récupère les paramètres de filtres depuis l'URL
         $selectedCategory = $request->query->get('category');
         $selectedStockFilter = $request->query->get('stock');
+        $selectedFeatured = $request->query->get('featured');
+        
+        // Conversion du paramètre de filtre "vedette"
+        $isFeatured = null;
+        if ($selectedFeatured === '1') $isFeatured = true;
+        if ($selectedFeatured === '0') $isFeatured = false;
         
         // Récupère le QueryBuilder des produits selon les filtres
-        $queryBuilder = $productRepository->getQueryBuilderAllByCategoryAndStock($selectedCategory, $selectedStockFilter);
+        $queryBuilder = $productRepository->getQueryBuilderAllByCategoryAndStock($selectedCategory, $selectedStockFilter, $isFeatured);
         
         // Met en place la pagination
         $pagination = $paginator->paginate(
@@ -55,6 +61,7 @@ final class ProductController extends AbstractController
             'categories' => $categories,
             'selectedCategory' => $selectedCategory,
             'selectedStockFilter' => $selectedStockFilter,
+            'selectedFeatured' => $selectedFeatured,
         ]);
     }
 
@@ -252,5 +259,22 @@ final class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('app_admin_products');
+    }
+
+    /**
+     * Bascule l'état "mis en avant" d'un produit
+     */
+    #[Route('/admin/product/{id}/toggle-featured', name: 'app_admin_product_toggle_featured', methods: ['POST'])]
+    public function toggleFeatured(Product $product, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Vérification CSRF
+        if ($this->isCsrfTokenValid('toggle-featured' . $product->getId(), $request->request->get('_token'))) {
+            $product->setIsFeatured(!$product->isFeatured());
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_admin_products', $request->query->all());
     }
 }

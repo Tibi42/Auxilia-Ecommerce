@@ -80,6 +80,16 @@ class ProductType extends AbstractType
                     )
                 ],
             ])
+            ->add('isFeatured', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
+                'label' => 'Mettre en avant sur la page d\'accueil',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input',
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label',
+                ],
+            ])
         ;
     }
 

@@ -22,9 +22,12 @@
 				<div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
 					<form
 						method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
-						{# Conserver le filtre stock si actif #}
+						{# Conserver les autres filtres #}
 						{% if selectedStockFilter %}
 							<input type="hidden" name="stock" value="{{ selectedStockFilter }}">
+						{% endif %}
+						{% if selectedFeatured is not null %}
+							<input type="hidden" name="featured" value="{{ selectedFeatured }}">
 						{% endif %}
 						<label for="category" style="font-weight: 500; color: var(--color-text);">Catégorie:</label>
 						<select name="category" id="category" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
@@ -39,9 +42,12 @@
 
 					<form
 						method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
-						{# Conserver le filtre catégorie si actif #}
+						{# Conserver les autres filtres #}
 						{% if selectedCategory %}
 							<input type="hidden" name="category" value="{{ selectedCategory }}">
+						{% endif %}
+						{% if selectedFeatured is not null %}
+							<input type="hidden" name="featured" value="{{ selectedFeatured }}">
 						{% endif %}
 						<label for="stock" style="font-weight: 500; color: var(--color-text);">Stock:</label>
 						<select name="stock" id="stock" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
@@ -53,7 +59,24 @@
 						</select>
 					</form>
 
-					{% if selectedCategory or selectedStockFilter %}
+					<form
+						method="get" action="{{ path('app_admin_products') }}" style="display: flex; gap: 0.5rem; align-items: center;">
+						{# Conserver les autres filtres #}
+						{% if selectedCategory %}
+							<input type="hidden" name="category" value="{{ selectedCategory }}">
+						{% endif %}
+						{% if selectedStockFilter %}
+							<input type="hidden" name="stock" value="{{ selectedStockFilter }}">
+						{% endif %}
+						<label for="featured" style="font-weight: 500; color: var(--color-text);">Vedette:</label>
+						<select name="featured" id="featured" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 1rem; background-color: white; color: var(--color-text); cursor: pointer;">
+							<option value="">Tous</option>
+							<option value="1" {% if selectedFeatured == '1' %} selected {% endif %}>Mis en avant</option>
+							<option value="0" {% if selectedFeatured == '0' %} selected {% endif %}>Standard</option>
+						</select>
+					</form>
+
+					{% if selectedCategory or selectedStockFilter or selectedFeatured is not null and selectedFeatured != '' %}
 						<a href="{{ path('app_admin_products') }}" style="padding: 0.5rem 1rem; background-color: #f0f0f0; color: var(--color-text); text-decoration: none; border-radius: 4px; font-size: 0.9rem;">Effacer tous</a>
 					{% endif %}
 				</div>
@@ -70,6 +93,7 @@
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Catégorie</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Prix</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Stock</th>
+								<th style="padding: 1rem; text-align: center; color: var(--color-text);">Vedette</th>
 								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Actions</th>
 							</tr>
 						</thead>
@@ -97,15 +121,27 @@
 										€</td>
 									<td style="padding: 1rem;">
 										<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-																																																                                            {% if product.stock < 10 %}
-																																																                                                background-color: #fee2e2; color: #dc2626;
-																																																                                            {% elseif product.stock < 30 %}
-																																																                                                background-color: #fef3c7; color: #d97706;
-																																																                                            {% else %}
-																																																                                                background-color: #d1fae5; color: #059669;
-																																																                                            {% endif %}">
+																																																																																				                                            {% if product.stock < 10 %}
+																																																																																				                                                background-color: #fee2e2; color: #dc2626;
+																																																																																				                                            {% elseif product.stock < 30 %}
+																																																																																				                                                background-color: #fef3c7; color: #d97706;
+																																																																																				                                            {% else %}
+																																																																																				                                                background-color: #d1fae5; color: #059669;
+																																																																																				                                            {% endif %}">
 											{{ product.stock ?? 'N/A' }}
 										</span>
+									</td>
+									<td style="padding: 1rem; text-align: center;">
+										<form method="post" action="{{ path('app_admin_product_toggle_featured', {'id': product.id} | merge(app.request.query.all)) }}" style="margin: 0;">
+											<input type="hidden" name="_token" value="{{ csrf_token('toggle-featured' ~ product.id) }}">
+											<button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+												{% if product.isFeatured %}
+													<i class="fas fa-star" style="color: #ffc107; font-size: 1.2rem;" title="Cliquer pour retirer des produits en vedette"></i>
+												{% else %}
+													<i class="far fa-star" style="color: #ccc; font-size: 1.2rem;" title="Cliquer pour mettre en avant"></i>
+												{% endif %}
+											</button>
+										</form>
 									</td>
 									<td style="padding: 1rem;">
 										<div style="display: flex; gap: 0.5rem; align-items: center;">

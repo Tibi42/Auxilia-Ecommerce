@@ -18,8 +18,8 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(ProductRepository $productRepository): Response
     {
-        // Récupère les 5 derniers produits pour la section "Produits à la une"
-        $featuredProducts = $productRepository->findBy([], ['id' => 'DESC'], 5);
+        // Récupère les produits mis en avant pour la section "Produits à la une"
+        $featuredProducts = $productRepository->findBy(['isFeatured' => true], ['id' => 'DESC'], 8);
 
         // Liste de commentaires clients mockés pour la démonstration
         $testimonials = [
