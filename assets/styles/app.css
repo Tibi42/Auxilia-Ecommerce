@@ -1,11 +1,13 @@
 /* Main App Styles - Cleaned up for Bootstrap integration */
 
 :root {
-    --color-primary: #0d6efd;
-    --color-secondary: #6c757d;
-    --color-accent: #3b82f6;
-    --color-dark: #212529;
-    --color-light: #f8f9fa;
+    --color-primary: #722f37;
+    /* Vin de Bourgogne */
+    --color-secondary: #f7e6c4;
+    /* Champagne */
+    --color-accent: #a63d40;
+    --color-dark: #2a1b1b;
+    --color-light: #fdfaf5;
     --color-white: #ffffff;
 }
 

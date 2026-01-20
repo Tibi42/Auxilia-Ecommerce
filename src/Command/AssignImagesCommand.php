@@ -50,13 +50,34 @@ class AssignImagesCommand extends Command
         $progressBar = new ProgressBar($output, count($products));
         $progressBar->start();
 
-        $diverseKeywords = ['shoes', 'shirt', 'watch', 'laptop', 'phone', 'bag', 'hat', 'jewelry', 'perfume', 'camera', 'chair', 'table', 'lamp', 'sofa', 'bike', 'car', 'book', 'toy', 'tool', 'sports', 'instrument', 'bicycle', 'glasses', 'wallet', 'belt', 'scarf'];
+        $wineKeywords = ['wine', 'vineyard', 'grape', 'wine-cellar', 'wine-bottle', 'wine-glass', 'red-wine', 'white-wine', 'rose-wine', 'champagne', 'sommelier', 'winery', 'oak-barrel'];
 
         foreach ($products as $index => $product) {
-            // Using Picsum Photos for GUARANTEED uniqueness. 
-            // LoremFlickr was returning duplicate placeholders.
-            $imageUrl = sprintf('https://picsum.photos/seed/%s/800/800', uniqid());
+            // Using Unsplash Source for high quality wine images
+            $keyword = $wineKeywords[array_rand($wineKeywords)];
+            $imageUrl = sprintf('https://source.unsplash.com/featured/800x800/?%s', $keyword);
             
+            // Note: Picsum is still great for reliability, but Unsplash is better for themes.
+            // Let's use a hybrid approach to ensure high resolution wine images.
+            $imageUrl = sprintf('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&h=800&fit=crop&q=80&sig=%s', uniqid());
+            
+            // Actually, let's use a variety of wine photos from Unsplash collection or keywords
+            $winePhotoIds = [
+                '1510812431401-41d2bd2722f3', // Bottles
+                '1506377247377-2a5b3b417ebb', // Grapes
+                '1504221507732-5246c045949b', // Vineyard
+                '1553392374-e229f1ec37f1', // Cellar
+                '1584916201218-f2108bc8d16d', // Red wine pour
+                '1516594915697-87eb3b1c14ea', // White wine
+                '1559158518-e3da342c8d2d', // Rose wine
+                '1594372365401-3b5ff14eaaed', // Tasting
+                '1568213816046-0ee1c42bd559', // Barrels
+                '1513110920617-40b493b10ec9', // Champagne
+            ];
+            
+            $photoId = $winePhotoIds[array_rand($winePhotoIds)];
+            $imageUrl = sprintf('https://images.unsplash.com/photo-%s?w=800&h=800&fit=crop&q=80', $photoId);
+
             try {
                 $response = $this->httpClient->request('GET', $imageUrl);
                 
