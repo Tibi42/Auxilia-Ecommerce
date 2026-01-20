@@ -46,19 +46,9 @@ final class HomeController extends AbstractController
             ]
         ];
 
-        // Liste des partenaires/sociétés (GAFAM)
-        $partners = [
-            ['name' => 'Google', 'logo' => 'https://www.vectorlogo.zone/logos/google/google-ar21.svg'],
-            ['name' => 'Apple', 'logo' => 'https://www.vectorlogo.zone/logos/apple/apple-ar21.svg'],
-            ['name' => 'Facebook', 'logo' => 'https://www.vectorlogo.zone/logos/facebook/facebook-ar21.svg'],
-            ['name' => 'Amazon', 'logo' => 'https://www.vectorlogo.zone/logos/amazon/amazon-ar21.svg'],
-            ['name' => 'Microsoft', 'logo' => 'https://www.vectorlogo.zone/logos/microsoft/microsoft-ar21.svg'],
-        ];
-
         return $this->render('home/index.html.twig', [
             'featuredProducts' => $featuredProducts,
             'testimonials' => $testimonials,
-            'partners' => $partners,
         ]);
     }
 }

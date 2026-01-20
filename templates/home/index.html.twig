@@ -52,26 +52,36 @@
 		</div>
 	</section>
 
-	<section class="py-5 overflow-hidden">
-		<div class="container-fluid px-0">
-			<h3 class="text-uppercase tracking-wider text-muted mb-5 small fw-bold text-center">Nos Domaines Partenaires</h3>
-			<div class="logo-scroll-container">
-				<div class="logo-scroll-track">
-					{% for partner in partners %}
-						<div class="logo-scroll-item">
-							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
-						</div>
-					{% endfor %}
-					{% for partner in partners %}
-						<div class="logo-scroll-item">
-							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
-						</div>
-					{% endfor %}
-					{% for partner in partners %}
-						<div class="logo-scroll-item">
-							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
-						</div>
-					{% endfor %}
+	<section class="py-5 bg-primary text-white shadow-lg">
+		<div class="container">
+			<div class="row g-4 text-center">
+				<div class="col-6 col-md-3">
+					<div class="p-3">
+						<div class="display-5 fw-bold mb-2">150k+</div>
+						<div class="text-white-50 text-uppercase small tracking-wider">Bouteilles vendues</div>
+						<i class="fas fa-wine-bottle mt-3 opacity-25 fa-2x"></i>
+					</div>
+				</div>
+				<div class="col-6 col-md-3 border-start border-white-10">
+					<div class="p-3">
+						<div class="display-5 fw-bold mb-2">5,200</div>
+						<div class="text-white-50 text-uppercase small tracking-wider">Hectolitres / an</div>
+						<i class="fas fa-fill-drip mt-3 opacity-25 fa-2x"></i>
+					</div>
+				</div>
+				<div class="col-6 col-md-3 border-start border-white-10">
+					<div class="p-3">
+						<div class="display-5 fw-bold mb-2">45</div>
+						<div class="text-white-50 text-uppercase small tracking-wider">Vignerons experts</div>
+						<i class="fas fa-users mt-3 opacity-25 fa-2x"></i>
+					</div>
+				</div>
+				<div class="col-6 col-md-3 border-start border-white-10">
+					<div class="p-3">
+						<div class="display-5 fw-bold mb-2">50+</div>
+						<div class="text-white-50 text-uppercase small tracking-wider">Années d'histoire</div>
+						<i class="fas fa-history mt-3 opacity-25 fa-2x"></i>
+					</div>
 				</div>
 			</div>
 		</div>
