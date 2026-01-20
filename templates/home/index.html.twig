@@ -52,15 +52,31 @@
 		</div>
 	</section>
 
-	<section class="py-5">
-		<div class="container text-center">
-			<h3 class="text-uppercase tracking-wider text-muted mb-5 small fw-bold">Ils nous font confiance</h3>
-			<div class="row align-items-center justify-content-center g-4">
-				{% for partner in partners %}
-					<div class="col-6 col-sm-4 col-md-2">
-						<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="img-fluid grayscale opacity-50 product-card-hover" style="max-height: 50px;">
-					</div>
-				{% endfor %}
+	<section class="py-5 overflow-hidden">
+		<div class="container-fluid px-0">
+			<h3 class="text-uppercase tracking-wider text-muted mb-5 small fw-bold text-center">Ils nous font confiance</h3>
+			<div class="logo-scroll-container">
+				<div
+					class="logo-scroll-track">
+					{# First set of logos #}
+					{% for partner in partners %}
+						<div class="logo-scroll-item">
+							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
+						</div>
+					{% endfor %}
+					{# Repeated set for infinite effect #}
+					{% for partner in partners %}
+						<div class="logo-scroll-item">
+							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
+						</div>
+					{% endfor %}
+					{# Repeated set again to ensure full coverage #}
+					{% for partner in partners %}
+						<div class="logo-scroll-item">
+							<img src="{{ partner.logo }}" alt="{{ partner.name }}" class="grayscale opacity-50 transition-all hover-color" style="max-height: 40px; width: auto;">
+						</div>
+					{% endfor %}
+				</div>
 			</div>
 		</div>
 	</section>

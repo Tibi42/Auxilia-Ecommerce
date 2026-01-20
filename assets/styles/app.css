@@ -1252,3 +1252,45 @@ input[type="radio"] {
 .tracking-widest {
     letter-spacing: 0.2em;
 }
+
+/* Infinite Logo Scroll */
+.logo-scroll-container {
+    padding: 2rem 0;
+    position: relative;
+    width: 100%;
+}
+
+.logo-scroll-track {
+    display: flex;
+    width: max-content;
+    animation: scrollLogos 30s linear infinite;
+}
+
+.logo-scroll-item {
+    padding: 0 3rem;
+    flex-shrink: 0;
+}
+
+@keyframes scrollLogos {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-100% / 3));
+    }
+}
+
+.logo-scroll-container:hover .logo-scroll-track {
+    animation-play-state: paused;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.hover-color:hover {
+    filter: grayscale(0) !important;
+    opacity: 1 !important;
+    transform: scale(1.1);
+}
