@@ -59,7 +59,7 @@
 													<div class="d-flex align-items-center">
 														<div class="rounded-3 border overflow-hidden me-3 bg-light d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; flex-shrink: 0;">
 															{% if item.product.imageName %}
-																<img src="{{ asset('uploads/products/' ~ item.product.imageName) }}" alt="{{ item.product.name }}" class="img-fluid w-100 h-100 object-fit-cover">
+																<img src="{{ item.product.imageName matches '/^https?:\\/\\//' ? item.product.imageName : asset('uploads/products/' ~ item.product.imageName) }}" alt="{{ item.product.name }}" class="img-fluid w-100 h-100 object-fit-cover">
 															{% else %}
 																<span class="fs-4 text-muted">📦</span>
 															{% endif %}
@@ -163,6 +163,7 @@ const deleteBtn = document.getElementById('delete-selected-btn');
 
 if (! selectAll || checkboxes.length === 0) 
 return;
+
 
 
 function updateDeleteBtn() {

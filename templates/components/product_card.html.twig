@@ -1,9 +1,9 @@
 {# Composant Carte Produit : affiche les informations résumées d'un produit (image, nom, prix, actions) #}
-<div class="card h-100 shadow-sm border-0 product-card-hover cursor-pointer" data-action="click->modal#open" data-name="{{ product.name }}" data-description="{{ product.description }}" data-price="{{ product.price }}" data-image="{% if product.imageName %}{{ asset('uploads/products/' ~ product.imageName) }}{% endif %}" data-add-to-cart-url="{{ path('cart_add', {id: product.id}) }}" style="cursor: pointer;">
+<div class="card h-100 shadow-sm border-0 product-card-hover cursor-pointer" data-action="click->modal#open" data-name="{{ product.name }}" data-description="{{ product.description }}" data-price="{{ product.price }}" data-image="{% if product.imageName %}{{ product.imageName matches '/^https?:\\/\\//' ? product.imageName : asset('uploads/products/' ~ product.imageName) }}{% endif %}" data-add-to-cart-url="{{ path('cart_add', {id: product.id}) }}" style="cursor: pointer;">
 
 	<div class="card-img-top bg-light d-flex align-items-center justify-content-center overflow-hidden product-img-wrapper">
 		{% if product.imageName %}
-			<img src="{{ asset('uploads/products/' ~ product.imageName) }}" alt="{{ product.name }}" class="img-fluid w-100 h-100 object-fit-cover" loading="lazy">
+			<img src="{{ product.imageName matches '/^https?:\\/\\//' ? product.imageName : asset('uploads/products/' ~ product.imageName) }}" alt="{{ product.name }}" class="img-fluid w-100 h-100 object-fit-cover" loading="lazy">
 		{% else %}
 			<div class="fs-1 text-muted">📦</div>
 		{% endif %}
