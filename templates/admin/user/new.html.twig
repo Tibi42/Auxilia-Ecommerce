@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un utilisateur - Admin
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-8">
+				<div class="mb-4 d-flex justify-content-between align-items-center">
+					<h1 class="h2 fw-bold text-primary mb-0">Créer un nouvel utilisateur</h1>
+					<a href="{{ path('app_admin_users') }}" class="btn btn-outline-secondary">
+						<i class="fas fa-arrow-left me-2"></i>Retour à la liste
+					</a>
+				</div>
+
+				<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+					<div class="card-body p-4 p-md-5">
+						{{ form_start(form) }}
+						<div class="row g-4">
+							<div class="col-md-6">
+								{{ form_row(form.email) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(form.plainPassword) }}
+							</div>
+							<div class="col-12">
+								<hr class="my-4 opacity-10">
+								<h5 class="fw-bold mb-3">
+									<i class="fas fa-user-shield me-2 text-primary"></i>Droits d'accès</h5>
+								{{ form_row(form.roles) }}
+							</div>
+							<div class="col-md-6">
+								<hr class="my-4 opacity-10">
+								<h5 class="fw-bold mb-3">
+									<i class="fas fa-user me-2 text-primary"></i>Infos personnelles</h5>
+								{{ form_row(form.firstName) }}
+							</div>
+							<div class="col-md-6">
+								<hr class="my-4 d-md-block d-none opacity-0">
+								<div class="mt-md-5 pt-md-2">
+									{{ form_row(form.lastName) }}
+								</div>
+							</div>
+							<div class="col-md-6">
+								{{ form_row(form.phone) }}
+							</div>
+							<div class="col-12">
+								<hr class="my-4 opacity-10">
+								<h5 class="fw-bold mb-3">
+									<i class="fas fa-map-marker-alt me-2 text-primary"></i>Adresse</h5>
+								{{ form_row(form.address) }}
+							</div>
+							<div class="col-md-4">
+								{{ form_row(form.postalCode) }}
+							</div>
+							<div class="col-md-4">
+								{{ form_row(form.city) }}
+							</div>
+							<div class="col-md-4">
+								{{ form_row(form.country) }}
+							</div>
+						</div>
+
+						<div class="mt-5 pt-4 border-top">
+							<button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
+								<i class="fas fa-check me-2"></i>Créer l'utilisateur
+							</button>
+						</div>
+						{{ form_end(form) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.form-label {
+			font-weight: 600;
+			color: #4a5568;
+			margin-bottom: 0.5rem;
+		}
+		.form-control {
+			border-radius: 10px;
+			padding: 0.75rem 1rem;
+			border: 1px solid #e2e8f0;
+		}
+		.form-control:focus {
+			border-color: var(--color-primary);
+			box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+		}
+		.form-check-input:checked {
+			background-color: var(--color-primary);
+			border-color: var(--color-primary);
+		}
+	</style>
+{% endblock %}

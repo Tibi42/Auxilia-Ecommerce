@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
 
 export default class extends Controller {
+    // Affiche la modale si l'âge n'a pas encore été vérifié
     connect() {
         if (!this.getCookie('age_verified')) {
             const modal = new Modal(this.element);
@@ -9,10 +10,12 @@ export default class extends Controller {
         }
     }
 
+    // Enregistre la vérification dans un cookie (valable 30 jours)
     verify() {
         this.setCookie('age_verified', 'true', 30);
     }
 
+    // Fonctions utilitaires pour la gestion des cookies
     getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);

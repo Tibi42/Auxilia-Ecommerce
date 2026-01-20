@@ -262,6 +262,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Indique si le compte est actif ou désactivé
+     */
+    #[ORM\Column(options: ["default" => true])]
+    private bool $isActive = true;
+
     public function getResetToken(): ?string
     {
         return $this->resetToken;
@@ -286,4 +292,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
 }
