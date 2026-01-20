@@ -144,12 +144,78 @@
 		</div>
 	</section>
 
-	<section class="about">
-		<div class="container">
-			<div class="about-content">
-				<h2>Notre engagement</h2>
-				<p>Chez Auxilia E-commerce, nous nous engageons à vous offrir une expérience d'achat exceptionnelle. Nous sélectionnons soigneusement chaque produit pour garantir qualité et satisfaction. Notre équipe est à votre disposition pour répondre à toutes vos questions et vous accompagner dans vos achats.</p>
-				<a href="{{ path('app_about') }}" class="btn btn-secondary">En savoir plus</a>
+	<section
+		class="py-5 bg-dark text-white position-relative overflow-hidden">
+		<!-- Subtle background decoration -->
+		<div class="position-absolute top-0 end-0 p-5 opacity-10 d-none d-lg-block">
+			<i class="fas fa-gem fa-10x rotate-12"></i>
+		</div>
+
+		<div class="container position-relative">
+			<div class="row align-items-center g-5">
+				<div class="col-lg-6">
+					<div class="pe-lg-5">
+						<h6 class="text-primary fw-bold text-uppercase tracking-widest mb-3">Notre Vision</h6>
+						<h2 class="display-4 fw-bold mb-4">Notre Engagement pour votre Satisfaction</h2>
+						<p class="lead text-white-50 mb-5">
+							Chez
+							<span class="text-primary fw-bold">Auxilia E-commerce</span>, nous ne nous contentons pas de vendre des produits. Nous créons une expérience de shopping simplifiée, transparente et durable.
+						</p>
+
+						<div class="row g-4 mb-5">
+							<div class="col-sm-6">
+								<div class="d-flex align-items-center">
+									<div class="bg-primary-subtle text-primary p-3 rounded-circle me-3">
+										<i class="fas fa-check-circle fa-xl"></i>
+									</div>
+									<div>
+										<h5 class="mb-0 fw-bold">Qualité Certifiée</h5>
+										<small class="text-white-50">Sélection rigoureuse</small>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="d-flex align-items-center">
+									<div class="bg-primary-subtle text-primary p-3 rounded-circle me-3">
+										<i class="fas fa-shipping-fast fa-xl"></i>
+									</div>
+									<div>
+										<h5 class="mb-0 fw-bold">Livraison Express</h5>
+										<small class="text-white-50">Suivi en temps réel</small>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<a href="{{ path('app_about') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
+							Découvrir notre histoire
+							<i class="fas fa-arrow-right ms-2 small"></i>
+						</a>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div
+						class="position-relative">
+						<!-- Image with decorative border -->
+						<div class="rounded-4 overflow-hidden shadow-2xl position-relative z-1">
+							<img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=1000&q=80" alt="Customer Support" class="img-fluid">
+						</div>
+						<!-- Floating stat card -->
+						<div class="position-absolute bottom-0 start-0 translate-middle-x mb-5 ms-4 d-none d-md-block z-2">
+							<div class="card border-0 shadow-lg bg-white text-dark rounded-4 p-4 animate__animated animate__fadeInUp">
+								<div class="d-flex align-items-center">
+									<div class="bg-success-subtle text-success p-3 rounded-3 me-3">
+										<i class="fas fa-heart fa-2x"></i>
+									</div>
+									<div>
+										<h3 class="fw-bold mb-0">99%</h3>
+										<p class="text-muted mb-0 small">Clients satisfaits</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>

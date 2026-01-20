@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Service\CartService;
+use App\Repository\CategoryRepository;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -12,10 +13,12 @@ use Twig\TwigFunction;
 class AppExtension extends AbstractExtension
 {
     private $cartService;
+    private $categoryRepository;
 
-    public function __construct(CartService $cartService)
+    public function __construct(CartService $cartService, CategoryRepository $categoryRepository)
     {
         $this->cartService = $cartService;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -26,6 +29,8 @@ class AppExtension extends AbstractExtension
         return [
             // Permet d'utiliser {{ cart_count() }} dans n'importe quel template
             new TwigFunction('cart_count', [$this, 'getCartCount']),
+            // Permet d'utiliser {{ get_categories() }} pour lister les catégories
+            new TwigFunction('get_categories', [$this, 'getCategories']),
         ];
     }
 
@@ -35,5 +40,13 @@ class AppExtension extends AbstractExtension
     public function getCartCount(): int
     {
         return $this->cartService->getQuantitySum();
+    }
+
+    /**
+     * Récupère toutes les catégories triées par nom
+     */
+    public function getCategories(): array
+    {
+        return $this->categoryRepository->findAllOrderedByName();
     }
 }

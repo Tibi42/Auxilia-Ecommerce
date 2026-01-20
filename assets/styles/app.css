@@ -33,7 +33,7 @@
 
 .product-card-hover:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Search results dropdown enhancement */
@@ -71,7 +71,7 @@
     margin: 4rem auto;
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
 /* Utility classes */
@@ -1225,4 +1225,30 @@ input[type="radio"] {
 .products-grid-centered {
     grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
     justify-content: center;
+}
+
+/* Additional Utilities */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.rotate-12 {
+    transform: rotate(12deg);
+}
+
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.opacity-10 {
+    opacity: 0.1 !important;
+}
+
+.tracking-widest {
+    letter-spacing: 0.2em;
 }
