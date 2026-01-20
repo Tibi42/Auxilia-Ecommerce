@@ -5,180 +5,207 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container" style="margin-top: 2rem;">
-		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-			<h1 style="font-size: 2.5rem; color: var(--color-primary);">Dashboard Administrateur</h1>
-			<a href="{{ path('app_home') }}" class="btn btn-secondary">Retour au site</a>
-		</div>
+<div class="container" style="margin-top: 2rem;">
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+		<h1 style="font-size: 2.5rem; color: var(--color-primary);">Dashboard Administrateur</h1>
+		<a href="{{ path('app_home') }}" class="btn btn-secondary">Retour au site</a>
+	</div>
 
-		<!-- Statistiques -->
-		<div class="dashboard-stats-grid" style="margin-bottom: 3rem;">
-			<a href="{{ path('app_admin_products') }}" class="dashboard-card" style="text-decoration: none;">
-				<div style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); padding: 2rem; border-radius: 12px; color: white;">
-					<div style="font-size: 3rem; margin-bottom: 0.5rem;">📦</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Produits</h3>
-					<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_products }}</p>
-					<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
-				</div>
-			</a>
-
-			<a href="{{ path('app_admin_users') }}" class="dashboard-card" style="text-decoration: none;">
-				<div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 2rem; border-radius: 12px; color: white;">
-					<div style="font-size: 3rem; margin-bottom: 0.5rem;">👥</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Utilisateurs</h3>
-					<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_users }}</p>
-					<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
-				</div>
-			</a>
-
-			<a href="{{ path('app_admin_orders') }}" class="dashboard-card" style="text-decoration: none;">
-				<div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 2rem; border-radius: 12px; color: white;">
-					<div style="font-size: 3rem; margin-bottom: 0.5rem;">🛒</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Commandes</h3>
-					<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_orders }}</p>
-					<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir toutes →</span>
-				</div>
-			</a>
-
-			<a href="{{ path('app_admin_products', {'stock': 'low'}) }}" class="dashboard-card" style="text-decoration: none;">
-				<div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 2rem; border-radius: 12px; color: white;">
-					<div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Stock faible</h3>
-					<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.low_stock_products }}</p>
-					<div style="margin-top: auto;">
-						<span style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem; display: block;">Produits à réapprovisionner</span>
-						<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
-					</div>
-				</div>
-			</a>
-		</div>
-
-		<!-- Navigation rapide -->
-		<div style="background-color: var(--color-light); padding: 2rem; border-radius: 12px; margin-bottom: 3rem;">
-			<h2 style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 1.5rem;">Navigation rapide</h2>
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-				<a href="{{ path('app_admin_products') }}" class="btn btn-primary" style="text-align: center; padding: 1rem;">
-					📦 Gérer les produits
-				</a>
-				<a href="{{ path('app_admin_users') }}" class="btn btn-secondary" style="text-align: center; padding: 1rem;">
-					👥 Gérer les utilisateurs
-				</a>
-				<a href="{{ path('app_admin_orders') }}" class="btn" style="background-color: #f59e0b; color: white; text-align: center; padding: 1rem;">
-					🛒 Gérer les commandes
-				</a>
-				<a href="{{ path('app_product') }}" class="btn" style="background-color: #10b981; color: white; text-align: center; padding: 1rem;">
-					🌐 Voir le site
-				</a>
+	<!-- Statistiques -->
+	<div class="dashboard-stats-grid" style="margin-bottom: 3rem;">
+		<a href="{{ path('app_admin_products') }}" class="dashboard-card" style="text-decoration: none;">
+			<div style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%); padding: 2rem; border-radius: 12px; color: white;">
+				<div style="font-size: 3rem; margin-bottom: 0.5rem;">📦</div>
+				<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Produits</h3>
+				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_products }}</p>
+				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
 			</div>
-		</div>
+		</a>
 
-		<!-- Contenu en 2 colonnes -->
-		<div
-			style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
-			<!-- Produits récents -->
-			<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-					<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Produits récents</h2>
-					<a href="{{ path('app_admin_products') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir tout →</a>
-				</div>
-				{% if recent_products|length > 0 %}
-					<div style="display: flex; flex-direction: column; gap: 1rem;">
-						{% for product in recent_products %}
-							<div style="padding: 1rem; background-color: var(--color-light); border-radius: 8px;">
-								<div style="display: flex; justify-content: space-between; align-items: start;">
-									<div style="flex: 1;">
-										<h3 style="font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--color-text);">{{ product.name }}</h3>
-										<p style="font-size: 0.9rem; color: var(--color-text-light); margin: 0 0 0.5rem 0;">
-											{{ product.price }}
-											€ | Stock:
-											{{ product.stock }}
-										</p>
-										<span style="font-size: 0.85rem; color: var(--color-text-light);">{{ product.category }}</span>
-									</div>
-								</div>
-							</div>
-						{% endfor %}
-					</div>
-				{% else %}
-					<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun produit</p>
-				{% endif %}
+		<a href="{{ path('app_admin_users') }}" class="dashboard-card" style="text-decoration: none;">
+			<div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 2rem; border-radius: 12px; color: white;">
+				<div style="font-size: 3rem; margin-bottom: 0.5rem;">👥</div>
+				<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Utilisateurs</h3>
+				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_users }}</p>
+				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
 			</div>
+		</a>
 
-			<!-- Utilisateurs récents -->
-			<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-					<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Utilisateurs récents</h2>
-					<a href="{{ path('app_admin_users') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir tout →</a>
-				</div>
-				{% if recent_users|length > 0 %}
-					<div style="display: flex; flex-direction: column; gap: 1rem;">
-						{% for user in recent_users %}
-							<div style="padding: 1rem; background-color: var(--color-light); border-radius: 8px;">
-								<div style="display: flex; justify-content: space-between; align-items: center;">
-									<div>
-										<h3 style="font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--color-text);">{{ user.email }}</h3>
-										<span style="font-size: 0.85rem; color: var(--color-text-light);">
-											{% if 'ROLE_ADMIN' in user.roles %}👑 Admin{% else %}👤 Utilisateur
-											{% endif %}
-										</span>
-									</div>
-								</div>
-							</div>
-						{% endfor %}
-					</div>
-				{% else %}
-					<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun utilisateur</p>
-				{% endif %}
+		<a href="{{ path('app_admin_orders') }}" class="dashboard-card" style="text-decoration: none;">
+			<div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 2rem; border-radius: 12px; color: white;">
+				<div style="font-size: 3rem; margin-bottom: 0.5rem;">🛒</div>
+				<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Commandes</h3>
+				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_orders }}</p>
+				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir toutes →</span>
 			</div>
-		</div>
+		</a>
 
-		<!-- Commandes récentes -->
+		<a href="{{ path('app_admin_testimonials') }}" class="dashboard-card" style="text-decoration: none;">
+			<div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 2rem; border-radius: 12px; color: white;">
+				<div style="font-size: 3rem; margin-bottom: 0.5rem;">⭐</div>
+				<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Témoignages</h3>
+				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_testimonials|default(0) }}</p>
+				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Gérer →</span>
+			</div>
+		</a>
+	</div>
+
+	<!-- Navigation rapide -->
+	<div style="background-color: var(--color-light); padding: 2rem; border-radius: 12px; margin-bottom: 3rem;">
+		<h2 style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 1.5rem;">Navigation rapide</h2>
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+			<a href="{{ path('app_admin_products') }}" class="btn btn-primary" style="text-align: center; padding: 1rem;">
+				📦 Gérer les produits
+			</a>
+			<a href="{{ path('app_admin_users') }}" class="btn btn-secondary" style="text-align: center; padding: 1rem;">
+				👥 Gérer les utilisateurs
+			</a>
+			<a href="{{ path('app_admin_orders') }}" class="btn" style="background-color: #f59e0b; color: white; text-align: center; padding: 1rem;">
+				🛒 Gérer les commandes
+			</a>
+			<a href="{{ path('app_admin_testimonials') }}" class="btn" style="background-color: #8b5cf6; color: white; text-align: center; padding: 1rem;">
+				⭐ Les témoignages
+			</a>
+			<a href="{{ path('app_product') }}" class="btn" style="background-color: #10b981; color: white; text-align: center; padding: 1rem;">
+				🌐 Voir le site
+			</a>
+		</div>
+	</div>
+
+	<!-- Contenu en 2 colonnes -->
+	<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+		<!-- Produits récents -->
 		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Commandes récentes</h2>
-				<a href="{{ path('app_admin_orders') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir toutes →</a>
+				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Produits récents</h2>
+				<a href="{{ path('app_admin_products') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir tout →</a>
 			</div>
-			{% if recent_orders|length > 0 %}
-				<div style="overflow-x: auto;">
-					<table style="width: 100%; border-collapse: collapse;">
-						<thead>
-							<tr style="border-bottom: 2px solid #e0e0e0;">
-								<th style="padding: 1rem; text-align: left; color: var(--color-text);">ID</th>
-								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Date</th>
-								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Total</th>
-								<th style="padding: 1rem; text-align: left; color: var(--color-text);">Statut</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for order in recent_orders %}
-								<tr style="border-bottom: 1px solid #e0e0e0;">
-									<td style="padding: 1rem;">#{{ order.id }}</td>
-									<td style="padding: 1rem;">{{ order.dateat|date('d/m/Y H:i') }}</td>
-									<td style="padding: 1rem; font-weight: bold; color: var(--color-primary);">{{ order.total }}
-										€</td>
-									<td style="padding: 1rem;">
-										{% set status_info = {
-                                            'paid': {'label': 'Payée', 'style': 'background-color: #dcfce7; color: #166534;'},
-                                            'confirmed': {'label': 'Confirmée', 'style': 'background-color: #dcfce7; color: #166534;'},
-                                            'pending': {'label': 'En attente', 'style': 'background-color: #fef9c3; color: #854d0e;'},
-                                            'delivered': {'label': 'Livrée', 'style': 'background-color: #dbeafe; color: #1e40af;'},
-                                            'cancelled': {'label': 'Annulée', 'style': 'background-color: #fee2e2; color: #991b1b;'},
-                                            'shipped': {'label': 'Expédiée', 'style': 'background-color: #f3e8ff; color: #6b21a8;'}
-                                        } %}
-										{% set info = status_info[order.status|lower] ?? {'label': order.status, 'style': 'background-color: #f1f5f9; color: #475569;'} %}
-										<span style="padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; {{ info.style }} display: inline-block; white-space: nowrap;">
-											<i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.4rem; vertical-align: middle; opacity: 0.7;"></i>
-											{{ info.label }}
-										</span>
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+			{% if recent_products|length > 0 %}
+				<div style="display: flex; flex-direction: column; gap: 1rem;">
+					{% for product in recent_products %}
+						<div style="padding: 1rem; background-color: var(--color-light); border-radius: 8px;">
+							<div style="display: flex; justify-content: space-between; align-items: start;">
+								<div style="flex: 1;">
+									<h3 style="font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--color-text);">{{ product.name }}</h3>
+									<p style="font-size: 0.9rem; color: var(--color-text-light); margin: 0 0 0.5rem 0;">
+										{{ product.price }} € | Stock: {{ product.stock }}
+									</p>
+									<span style="font-size: 0.85rem; color: var(--color-text-light);">{{ product.category }}</span>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
 				</div>
 			{% else %}
-				<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucune commande</p>
+				<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun produit</p>
+			{% endif %}
+		</div>
+
+		<!-- Utilisateurs récents -->
+		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Utilisateurs récents</h2>
+				<a href="{{ path('app_admin_users') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir tout →</a>
+			</div>
+			{% if recent_users|length > 0 %}
+				<div style="display: flex; flex-direction: column; gap: 1rem;">
+					{% for user in recent_users %}
+						<div style="padding: 1rem; background-color: var(--color-light); border-radius: 8px;">
+							<div style="display: flex; justify-content: space-between; align-items: center;">
+								<div>
+									<h3 style="font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--color-text);">{{ user.email }}</h3>
+									<span style="font-size: 0.85rem; color: var(--color-text-light);">
+										{% if 'ROLE_ADMIN' in user.roles %}👑 Admin{% else %}👤 Utilisateur{% endif %}
+									</span>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% else %}
+				<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun utilisateur</p>
 			{% endif %}
 		</div>
 	</div>
+
+	<!-- Témoignages récents -->
+	{% if recent_testimonials is defined and recent_testimonials|length > 0 %}
+	<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; margin-bottom: 3rem;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+			<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Témoignages récents</h2>
+			<a href="{{ path('app_admin_testimonials') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Gérer tout →</a>
+		</div>
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+			{% for t in recent_testimonials %}
+				<div style="padding: 1.25rem; background-color: var(--color-light); border-radius: 12px; border-left: 4px solid {{ t.isApproved ? '#10b981' : '#f59e0b' }};">
+					<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+						<div style="flex: 1;">
+							<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+								<h3 style="font-size: 1rem; margin: 0; color: var(--color-text);">{{ t.name }}</h3>
+								<span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 9999px; {{ t.isApproved ? 'background-color: #dcfce7; color: #166534;' : 'background-color: #fef9c3; color: #854d0e;' }}">
+									{{ t.isApproved ? 'Approuvé' : 'En attente' }}
+								</span>
+							</div>
+							<div style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 0.9rem;">
+								{% for i in 1..5 %}
+									{% if i <= t.rating %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}
+								{% endfor %}
+							</div>
+							<p style="font-size: 0.9rem; color: var(--color-text-light); margin: 0; line-height: 1.4;">{{ t.content|length > 100 ? t.content|slice(0, 100) ~ '...' : t.content }}</p>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+
+	<!-- Commandes récentes -->
+	<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+			<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Commandes récentes</h2>
+			<a href="{{ path('app_admin_orders') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Voir toutes →</a>
+		</div>
+		{% if recent_orders|length > 0 %}
+			<div style="overflow-x: auto;">
+				<table style="width: 100%; border-collapse: collapse;">
+					<thead>
+						<tr style="border-bottom: 2px solid #e0e0e0;">
+							<th style="padding: 1rem; text-align: left; color: var(--color-text);">ID</th>
+							<th style="padding: 1rem; text-align: left; color: var(--color-text);">Date</th>
+							<th style="padding: 1rem; text-align: left; color: var(--color-text);">Total</th>
+							<th style="padding: 1rem; text-align: left; color: var(--color-text);">Statut</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for order in recent_orders %}
+							<tr style="border-bottom: 1px solid #e0e0e0;">
+								<td style="padding: 1rem;">#{{ order.id }}</td>
+								<td style="padding: 1rem;">{{ order.dateat|date('d/m/Y H:i') }}</td>
+								<td style="padding: 1rem; font-weight: bold; color: var(--color-primary);">{{ order.total }} €</td>
+								<td style="padding: 1rem;">
+									{% set status_info = {
+										'paid': {'label': 'Payée', 'style': 'background-color: #dcfce7; color: #166534;'},
+										'confirmed': {'label': 'Confirmée', 'style': 'background-color: #dcfce7; color: #166534;'},
+										'pending': {'label': 'En attente', 'style': 'background-color: #fef9c3; color: #854d0e;'},
+										'delivered': {'label': 'Livrée', 'style': 'background-color: #dbeafe; color: #1e40af;'},
+										'cancelled': {'label': 'Annulée', 'style': 'background-color: #fee2e2; color: #991b1b;'},
+										'shipped': {'label': 'Expédiée', 'style': 'background-color: #f3e8ff; color: #6b21a8;'}
+									} %}
+									{% set info = status_info[order.status|lower] ?? {'label': order.status, 'style': 'background-color: #f1f5f9; color: #475569;'} %}
+									<span style="padding: 0.4rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; {{ info.style }} display: inline-block; white-space: nowrap;">
+										<i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.4rem; vertical-align: middle; opacity: 0.7;"></i>
+										{{ info.label }}
+									</span>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucune commande</p>
+		{% endif %}
+	</div>
+</div>
 {% endblock %}

@@ -7,6 +7,9 @@ export default class extends Controller {
     };
 
     connect() {
+        if (this.hasInputTarget && this.inputTarget.value) {
+            this.ratingValue = parseInt(this.inputTarget.value);
+        }
         this.updateStars(this.ratingValue);
     }
 

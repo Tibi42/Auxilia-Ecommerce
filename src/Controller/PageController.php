@@ -36,15 +36,14 @@ final class PageController extends AbstractController
      * @return Response Une instance de Response vers la vue contact ou une redirection
      */
     #[Route('/contact', name: 'app_contact')]
-    public function contact(Request $request, MailerInterface $mailer): Response
+    public function contact(Request $request, MailerInterface $mailer, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ContactFormType::class);
-        $form->handleRequest($request);
+        // 1. Gestion du formulaire de contact classique
+        $contactForm = $this->createForm(ContactFormType::class);
+        $contactForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            // Envoi de l'email (optionnel - nécessite la configuration du mailer)
+        if ($contactForm->isSubmitted() && $contactForm->isValid()) {
+            $data = $contactForm->getData();
             try {
                 $email = (new MimeEmail())
                     ->from($data['email'])
@@ -60,18 +59,33 @@ final class PageController extends AbstractController
                 $mailer->send($email);
                 $this->addFlash('success', 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
             } catch (\Exception $e) {
-                if ($this->getParameter('kernel.environment') === 'dev') {
-                    $this->addFlash('error', 'Erreur mail : ' . $e->getMessage());
-                } else {
-                    $this->addFlash('success', 'Votre message a été enregistré. Nous vous répondrons dans les plus brefs délais.');
-                }
+                // En cas d'erreur d'envoi mail (ex: configuration locale), on notifie tout de même le succès de l'enregistrement si applicable
+                $this->addFlash('success', 'Votre message a été enregistré. Nous vous répondrons dans les plus brefs délais.');
             }
-
             return $this->redirectToRoute('app_contact');
         }
 
+        // 2. Gestion du formulaire de témoignage (Commentaire)
+        $testimonial = new \App\Entity\Testimonial();
+        $testimonial->setRating(5); // Default rating
+        $testimonialForm = $this->createForm(\App\Form\TestimonialType::class, $testimonial);
+        $testimonialForm->handleRequest($request);
+
+        if ($testimonialForm->isSubmitted()) {
+            if ($testimonialForm->isValid()) {
+                $entityManager->persist($testimonial);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Merci pour votre témoignage ! Il sera publié après validation par notre équipe.');
+                return $this->redirectToRoute('app_contact');
+            } else {
+                $this->addFlash('error', 'Veuillez corriger les erreurs dans votre commentaire (n\'oubliez pas de donner une note).');
+            }
+        }
+
         return $this->render('page/contact.html.twig', [
-            'contactForm' => $form,
+            'contactForm' => $contactForm->createView(),
+            'testimonialForm' => $testimonialForm->createView(),
         ]);
     }
 }

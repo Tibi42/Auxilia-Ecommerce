@@ -75,6 +75,8 @@ class ContactFormType extends AbstractType
             ])
         ;
     }
+    public function getBlockPrefix(): string
+    {
+        return 'contact_form';
+    }
 }
-
-

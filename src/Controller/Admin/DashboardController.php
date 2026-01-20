@@ -28,7 +28,8 @@ final class DashboardController extends AbstractController
     public function index(
         ProductRepository $productRepository,
         UserRepository $userRepository,
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        \App\Repository\TestimonialRepository $testimonialRepository
     ): Response {
         // Sécurité : Vérification explicite du rôle admin
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -36,6 +37,7 @@ final class DashboardController extends AbstractController
             'total_products' => $productRepository->count([]),
             'total_users' => $userRepository->count([]),
             'total_orders' => $orderRepository->count([]),
+            'total_testimonials' => $testimonialRepository->count([]),
             'low_stock_products' => count($productRepository->createQueryBuilder('p')
                 ->where('p.stock < :threshold')
                 ->setParameter('threshold', 10)
@@ -46,12 +48,14 @@ final class DashboardController extends AbstractController
         $recentProducts = $productRepository->findBy([], ['id' => 'DESC'], 5);
         $recentUsers = $userRepository->findBy([], ['id' => 'DESC'], 5);
         $recentOrders = $orderRepository->findBy([], ['id' => 'DESC'], 5);
+        $recentTestimonials = $testimonialRepository->findBy([], ['id' => 'DESC'], 5);
 
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => $stats,
             'recent_products' => $recentProducts,
             'recent_users' => $recentUsers,
             'recent_orders' => $recentOrders,
+            'recent_testimonials' => $recentTestimonials,
         ]);
     }
 }
