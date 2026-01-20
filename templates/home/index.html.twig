@@ -74,7 +74,7 @@
 				</div>
 				<a href="{{ path('app_product') }}" class="btn btn-link text-primary text-decoration-none fw-bold">Voir tout &rarr;</a>
 			</div>
-			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 justify-content-center g-4 mb-5">
 				{% for product in featuredProducts %}
 					<div class="col">
 						{% include 'components/product_card.html.twig' with {product: product} %}
