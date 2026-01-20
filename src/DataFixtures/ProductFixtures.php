@@ -230,13 +230,17 @@ class ProductFixtures extends Fixture
             ],
         ];
 
-        foreach ($products as $productData) {
+        foreach ($products as $index => $productData) {
             $product = new Product();
             $product->setName($productData['name']);
             $product->setDescription($productData['description']);
             $product->setPrice($productData['price']);
             $product->setStock($productData['stock']);
             $product->setCategory($categoryEntities[$productData['category']]->getName());
+
+            // Image aléatoire unique basée sur le nom du produit
+            $product->setImageName(sprintf('https://picsum.photos/seed/%s/800/800', md5($productData['name'])));
+
             $manager->persist($product);
         }
 
