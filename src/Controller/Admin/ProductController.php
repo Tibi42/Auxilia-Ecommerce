@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * Contrôleur d'administration pour la gestion du catalogue de produits
@@ -27,7 +28,7 @@ final class ProductController extends AbstractController
      * @return Response Une instance de Response vers la liste des produits admin
      */
     #[Route('/admin/products', name: 'app_admin_products')]
-    public function index(ProductRepository $productRepository, Request $request): Response
+    public function index(ProductRepository $productRepository, Request $request, PaginatorInterface $paginator): Response
     {
         // Sécurité : Vérification explicite du rôle admin
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -36,14 +37,21 @@ final class ProductController extends AbstractController
         $selectedCategory = $request->query->get('category');
         $selectedStockFilter = $request->query->get('stock');
         
-        // Récupère les produits selon les filtres
-        $products = $productRepository->findAllByCategoryAndStock($selectedCategory, $selectedStockFilter);
+        // Récupère le QueryBuilder des produits selon les filtres
+        $queryBuilder = $productRepository->getQueryBuilderAllByCategoryAndStock($selectedCategory, $selectedStockFilter);
+        
+        // Met en place la pagination
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            10 // Nombre de produits par page
+        );
         
         // Récupère toutes les catégories distinctes pour le filtre
         $categories = $productRepository->findDistinctCategories();
 
         return $this->render('admin/product/index.html.twig', [
-            'products' => $products,
+            'pagination' => $pagination,
             'categories' => $categories,
             'selectedCategory' => $selectedCategory,
             'selectedStockFilter' => $selectedStockFilter,

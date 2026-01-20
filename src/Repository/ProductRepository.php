@@ -22,14 +22,15 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    /**
-     * Récupère tous les produits filtrés par catégorie et/ou stock si fournis
-     * 
-     * @param string|null $category La catégorie à filtrer, null pour tous les produits
-     * @param string|null $stockFilter Le filtre de stock ('low', 'medium', 'high', 'out'), null pour tous
-     * @return Product[] Liste des produits
-     */
     public function findAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null): array
+    {
+        return $this->getQueryBuilderAllByCategoryAndStock($category, $stockFilter)->getQuery()->getResult();
+    }
+
+    /**
+     * Retourne le QueryBuilder pour tous les produits filtrés par catégorie et/ou stock
+     */
+    public function getQueryBuilderAllByCategoryAndStock(?string $category = null, ?string $stockFilter = null)
     {
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.id', 'DESC');
@@ -61,7 +62,7 @@ class ProductRepository extends ServiceEntityRepository
             }
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb;
     }
 
     /**

@@ -16,7 +16,7 @@
 
 		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des produits ({{ products|length }})</h2>
+				<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">Liste des produits ({{ pagination.getTotalItemCount }})</h2>
 
 				{# Formulaires de filtres #}
 				<div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
@@ -59,7 +59,7 @@
 				</div>
 			</div>
 
-			{% if products|length > 0 %}
+			{% if pagination|length > 0 %}
 				<div style="overflow-x: auto;">
 					<table style="width: 100%; border-collapse: collapse;">
 						<thead>
@@ -74,7 +74,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for product in products %}
+							{% for product in pagination %}
 								<tr style="border-bottom: 1px solid #e0e0e0;">
 									<td style="padding: 1rem;">
 										{% if product.imageName %}
@@ -97,13 +97,13 @@
 										€</td>
 									<td style="padding: 1rem;">
 										<span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;
-																																				                                            {% if product.stock < 10 %}
-																																				                                                background-color: #fee2e2; color: #dc2626;
-																																				                                            {% elseif product.stock < 30 %}
-																																				                                                background-color: #fef3c7; color: #d97706;
-																																				                                            {% else %}
-																																				                                                background-color: #d1fae5; color: #059669;
-																																				                                            {% endif %}">
+																																																                                            {% if product.stock < 10 %}
+																																																                                                background-color: #fee2e2; color: #dc2626;
+																																																                                            {% elseif product.stock < 30 %}
+																																																                                                background-color: #fef3c7; color: #d97706;
+																																																                                            {% else %}
+																																																                                                background-color: #d1fae5; color: #059669;
+																																																                                            {% endif %}">
 											{{ product.stock ?? 'N/A' }}
 										</span>
 									</td>
@@ -120,6 +120,10 @@
 							{% endfor %}
 						</tbody>
 					</table>
+				</div>
+
+				<div style="margin-top: 2rem; display: flex; justify-content: center;">
+					{{ knp_pagination_render(pagination) }}
 				</div>
 			{% else %}
 				<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucun produit</p>
