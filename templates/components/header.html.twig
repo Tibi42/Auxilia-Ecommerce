@@ -49,6 +49,9 @@
 
 				{# Profil / Login #}
 				{% if app.user %}
+					{% if is_granted('ROLE_ADMIN') %}
+						<a href="{{ path('app_admin_dashboard') }}" class="btn btn-xs btn-primary text-white d-none d-lg-inline-block px-2 me-1" style="font-size: 0.65rem;">Admin</a>
+					{% endif %}
 					<a href="{{ path('app_profile') }}" class="text-dark text-decoration-none p-1 ms-1" title="Mon compte">
 						<i class="fas fa-user-circle fa-lg"></i>
 					</a>
