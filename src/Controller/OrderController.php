@@ -161,13 +161,28 @@ class OrderController extends AbstractController
         $entityManager->persist($order);
 
         foreach ($cart as $item) {
+            /** @var \App\Entity\Product $product */
+            $product = $item['product'];
+            $quantity = $item['quantity'];
+
+            // Vérification du stock
+            if ($product->getStock() !== null && $product->getStock() < $quantity) {
+                $this->addFlash('error', sprintf('Désolé, le produit "%s" n\'est plus disponible en quantité suffisante (Stock actuel : %d).', $product->getName(), $product->getStock()));
+                return $this->redirectToRoute('cart_index');
+            }
+
+            // Soustraction du stock
+            if ($product->getStock() !== null) {
+                $product->setStock($product->getStock() - $quantity);
+            }
+
             $orderItem = new OrderItem();
             $orderItem->setOrderRef($order);
-            $orderItem->setProduct($item['product']);
-            $orderItem->setProductName($item['product']->getName());
-            $orderItem->setQuantity($item['quantity']);
-            $orderItem->setPrice($item['product']->getPrice());
-            $orderItem->setTotal((string)($item['product']->getPrice() * $item['quantity']));
+            $orderItem->setProduct($product);
+            $orderItem->setProductName($product->getName());
+            $orderItem->setQuantity($quantity);
+            $orderItem->setPrice($product->getPrice());
+            $orderItem->setTotal((string)($product->getPrice() * $quantity));
             $entityManager->persist($orderItem);
         }
 

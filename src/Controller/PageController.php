@@ -48,7 +48,7 @@ final class PageController extends AbstractController
             try {
                 $email = (new MimeEmail())
                     ->from($data['email'])
-                    ->to('contact@auxilia-ecommerce.com')
+                    ->to('guillaume.pecquet@gmail.com')
                     ->subject('Contact depuis le site : ' . $data['subject'])
                     ->html($this->renderView('emails/contact.html.twig', [
                         'name' => $data['name'],
@@ -60,9 +60,11 @@ final class PageController extends AbstractController
                 $mailer->send($email);
                 $this->addFlash('success', 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
             } catch (\Exception $e) {
-                // En cas d'erreur d'envoi, on affiche quand même un message de succès
-                // (pour ne pas exposer les erreurs techniques à l'utilisateur)
-                $this->addFlash('success', 'Votre message a été enregistré. Nous vous répondrons dans les plus brefs délais.');
+                if ($this->getParameter('kernel.environment') === 'dev') {
+                    $this->addFlash('error', 'Erreur mail : ' . $e->getMessage());
+                } else {
+                    $this->addFlash('success', 'Votre message a été enregistré. Nous vous répondrons dans les plus brefs délais.');
+                }
             }
 
             return $this->redirectToRoute('app_contact');
