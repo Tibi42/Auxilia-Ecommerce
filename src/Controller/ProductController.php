@@ -100,21 +100,17 @@ final class ProductController extends AbstractController
             return $this->json([]);
         }
 
-        $products = $productRepository->createQueryBuilder('p')
-            ->andWhere('p.name LIKE :q OR p.description LIKE :q')
-            ->setParameter('q', '%' . $q . '%')
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
+        // Utilise la méthode optimisée qui retourne un tableau (pas d'entités)
+        $products = $productRepository->searchForAutocomplete($q, 5);
 
         $data = [];
         foreach ($products as $product) {
             $data[] = [
-                'id' => $product->getId(),
-                'name' => $product->getName(),
-                'price' => $product->getPrice() . ' €',
-                'description' => mb_strimwidth($product->getDescription() ?? '', 0, 50, '...'),
-                'image' => $product->getImageName() ? '/uploads/products/' . $product->getImageName() : null,
+                'id' => $product['id'],
+                'name' => $product['name'],
+                'price' => $product['price'] . ' €',
+                'description' => mb_strimwidth($product['description'] ?? '', 0, 50, '...'),
+                'image' => $product['imageName'] ? '/uploads/products/' . $product['imageName'] : null,
             ];
         }
 

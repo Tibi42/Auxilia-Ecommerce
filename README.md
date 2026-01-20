@@ -190,6 +190,63 @@ php bin/console debug:router
 php bin/console debug:container
 ```
 
+## 🚀 Optimisations de Performance
+
+### Configuration PHP (php.ini)
+
+Pour des performances optimales en production, configurez OPcache :
+
+```ini
+; OPcache - Obligatoire pour de bonnes performances
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0  ; Mettre à 1 en dev
+opcache.revalidate_freq=0
+opcache.preload=/chemin/vers/projet/config/preload.php
+opcache.preload_user=www-data
+
+; Realpath cache
+realpath_cache_size=4096K
+realpath_cache_ttl=600
+```
+
+### Mise en cache Doctrine
+
+Le projet utilise plusieurs niveaux de cache :
+- **Metadata Cache** : Cache des définitions d'entités
+- **Query Cache** : Cache des requêtes DQL parsées  
+- **Result Cache** : Cache des résultats de requêtes fréquentes
+
+### Index Base de Données
+
+Des index ont été ajoutés sur les colonnes fréquemment utilisées :
+- `Product` : category, isFeatured, price, name
+- `Order` : status, dateat, user_id
+- `Category` : name, slug
+
+Après modification des entités, générez la migration :
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+### Commandes de préparation pour la production
+
+```bash
+# Vider et réchauffer le cache
+php bin/console cache:clear --env=prod
+php bin/console cache:warmup --env=prod
+
+# Compiler les assets
+php bin/console asset-map:compile
+
+# Dumper l'autoloader optimisé
+composer dump-autoload --optimize --classmap-authoritative
+```
+
 ## 🧪 Tests
 
 Les tests peuvent être exécutés avec PHPUnit :

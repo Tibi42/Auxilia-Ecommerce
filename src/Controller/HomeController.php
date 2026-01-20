@@ -18,8 +18,8 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(ProductRepository $productRepository, \App\Repository\TestimonialRepository $testimonialRepository): Response
     {
-        // Récupère les produits mis en avant pour la section "Produits à la une"
-        $featuredProducts = $productRepository->findBy(['isFeatured' => true], ['id' => 'DESC'], 8);
+        // Récupère les produits mis en avant pour la section "Produits à la une" (avec cache)
+        $featuredProducts = $productRepository->findFeaturedProducts(8);
 
         // Récupère les témoignages approuvés depuis la base de données
         $dbTestimonials = $testimonialRepository->findApproved(3);

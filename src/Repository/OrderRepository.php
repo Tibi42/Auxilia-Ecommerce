@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Order;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,7 @@ class OrderRepository extends ServiceEntityRepository
 
     /**
      * Récupère toutes les commandes filtrées par statut si fourni
+     * Optimisé avec fetch join pour éviter les requêtes N+1 sur User et OrderItems
      * 
      * @param string|null $status Le statut à filtrer, null pour toutes les commandes
      * @return Order[] Liste des commandes
@@ -26,6 +28,10 @@ class OrderRepository extends ServiceEntityRepository
     public function findAllByStatus(?string $status = null): array
     {
         $qb = $this->createQueryBuilder('o')
+            ->leftJoin('o.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('o.orderItems', 'oi')
+            ->addSelect('oi')
             ->orderBy('o.id', 'DESC');
 
         if ($status !== null && $status !== '') {
@@ -34,6 +40,47 @@ class OrderRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère les commandes d'un utilisateur avec les items (optimisé)
+     * 
+     * @param User $user L'utilisateur
+     * @return Order[] Liste des commandes de l'utilisateur
+     */
+    public function findByUserWithItems(User $user): array
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.orderItems', 'oi')
+            ->addSelect('oi')
+            ->leftJoin('oi.product', 'p')
+            ->addSelect('p')
+            ->andWhere('o.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('o.dateat', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère une commande avec tous ses détails (optimisé)
+     * 
+     * @param int $id L'identifiant de la commande
+     * @return Order|null La commande ou null
+     */
+    public function findOneWithDetails(int $id): ?Order
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('o.orderItems', 'oi')
+            ->addSelect('oi')
+            ->leftJoin('oi.product', 'p')
+            ->addSelect('p')
+            ->andWhere('o.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

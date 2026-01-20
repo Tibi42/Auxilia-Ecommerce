@@ -13,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ORM\Index(columns: ['status'], name: 'idx_order_status')]
+#[ORM\Index(columns: ['dateat'], name: 'idx_order_date')]
+#[ORM\Index(columns: ['user_id', 'dateat'], name: 'idx_order_user_date')]
 class Order
 {
     /**

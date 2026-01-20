@@ -27,6 +27,8 @@ class TestimonialRepository extends ServiceEntityRepository
             ->orderBy('t.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
+            // Cache le résultat pendant 5 minutes (les témoignages changent rarement)
+            ->enableResultCache(300, 'approved_testimonials_' . $limit)
             ->getResult()
         ;
     }

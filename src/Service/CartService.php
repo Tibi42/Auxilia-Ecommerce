@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Service gérant la logique du panier d'achat
+ * 
+ * Optimisé pour éviter les flush multiples vers la base de données.
+ * La sauvegarde du panier utilisateur est différée jusqu'à la fin de la requête.
  */
 class CartService
 {
@@ -19,6 +22,11 @@ class CartService
     private $security;
     private $entityManager;
     private ?array $fullCart = null;
+    
+    /**
+     * Indique si le panier a été modifié (pour sauvegarde différée)
+     */
+    private bool $cartModified = false;
 
     /**
      * Initialise le service avec les dépendances nécessaires
@@ -39,6 +47,16 @@ class CartService
         $this->security = $security;
         $this->entityManager = $entityManager;
     }
+    
+    /**
+     * Destructeur : sauvegarde le panier si modifié (flush différé)
+     */
+    public function __destruct()
+    {
+        if ($this->cartModified) {
+            $this->flushCartToUser();
+        }
+    }
 
     /**
      * Ajoute un produit au panier ou incrémente sa quantité
@@ -56,7 +74,7 @@ class CartService
         }
 
         $this->getSession()->set('cart', $cart);
-        $this->saveToUser($cart);
+        $this->markAsModified();
         $this->fullCart = null;
     }
 
@@ -78,7 +96,7 @@ class CartService
         }
 
         $this->getSession()->set('cart', $cart);
-        $this->saveToUser($cart);
+        $this->markAsModified();
         $this->fullCart = null;
     }
 
@@ -87,16 +105,16 @@ class CartService
      * 
      * @param int $id L'identifiant du produit à supprimer
      */
-    public function deleteAll(int $id) // Changed return type from void to implicit as per provided code
+    public function deleteAll(int $id): void
     {
-        $cart = $this->getSession()->get('cart', []); // Uses new getSession() method
+        $cart = $this->getSession()->get('cart', []);
 
-        if (!empty($cart[$id])) { // Condition changed from isset to !empty as per provided code
+        if (!empty($cart[$id])) {
             unset($cart[$id]);
         }
 
         $this->getSession()->set('cart', $cart);
-        $this->saveToUser($cart);
+        $this->markAsModified();
         $this->fullCart = null;
     }
 
@@ -105,9 +123,9 @@ class CartService
      * 
      * @param array $ids Liste des identifiants des produits à supprimer
      */
-    public function deleteSelection(array $ids) // Changed return type from void to implicit as per provided code
+    public function deleteSelection(array $ids): void
     {
-        $cart = $this->getSession()->get('cart', []); // Uses new getSession() method
+        $cart = $this->getSession()->get('cart', []);
 
         foreach ($ids as $id) {
             if (isset($cart[$id])) {
@@ -116,7 +134,7 @@ class CartService
         }
 
         $this->getSession()->set('cart', $cart);
-        $this->saveToUser($cart);
+        $this->markAsModified();
         $this->fullCart = null;
     }
 
@@ -126,7 +144,7 @@ class CartService
     public function clear(): void
     {
         $this->getSession()->set('cart', []);
-        $this->saveToUser([]);
+        $this->markAsModified();
         $this->fullCart = null;
     }
 
@@ -199,28 +217,51 @@ class CartService
     /**
      * Récupère la session courante
      */
-    private function getSession(): SessionInterface // New method added as per provided code
+    private function getSession(): SessionInterface
     {
         return $this->requestStack->getSession();
     }
 
     /**
-     * Sauvegarde le panier dans la base de données pour l'utilisateur connecté
-     * 
-     * Permet de persister le panier pour qu'il soit disponible après déconnexion.
-     * Le panier est stocké dans l'entité User pour une sauvegarde permanente.
-     * 
-     * @param array $cart Le panier à sauvegarder (tableau associatif id => quantité)
+     * Marque le panier comme modifié pour la sauvegarde différée
      */
-    private function saveToUser(array $cart): void
+    private function markAsModified(): void
+    {
+        $this->cartModified = true;
+    }
+
+    /**
+     * Sauvegarde le panier dans la base de données (appelé à la fin de la requête)
+     * 
+     * Cette méthode est optimisée pour ne faire qu'un seul flush par requête,
+     * même si le panier a été modifié plusieurs fois.
+     */
+    private function flushCartToUser(): void
     {
         $user = $this->security->getUser();
 
         // Sauvegarde uniquement si l'utilisateur est connecté
         if ($user instanceof User) {
+            $cart = $this->getSession()->get('cart', []);
             $user->setCart($cart);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            
+            // Vérifie que l'EntityManager est encore ouvert
+            if ($this->entityManager->isOpen()) {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            }
+        }
+        
+        $this->cartModified = false;
+    }
+
+    /**
+     * Force la sauvegarde immédiate du panier (utilisé pour les cas critiques comme checkout)
+     */
+    public function persistNow(): void
+    {
+        if ($this->cartModified) {
+            $this->flushCartToUser();
         }
     }
 }

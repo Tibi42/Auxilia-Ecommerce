@@ -7,6 +7,11 @@ doctrine:
         #server_version: '16'
 
         profiling_collect_backtrace: '%kernel.debug%'
+        
+        # Utiliser des connexions persistantes pour de meilleures performances
+        options:
+            # PDO persistent connections
+            !php/const PDO::ATTR_PERSISTENT: true
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -22,6 +27,27 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: false
+        # Active le cache de métadonnées pour éviter de parser les annotations/attributs à chaque requête
+        metadata_cache_driver:
+            type: pool
+            pool: doctrine.system_cache_pool
+
+when@dev:
+    doctrine:
+        orm:
+            # Cache des métadonnées même en dev pour améliorer les performances
+            metadata_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            # Cache des requêtes DQL en dev
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+    framework:
+        cache:
+            pools:
+                doctrine.system_cache_pool:
+                    adapter: cache.adapter.filesystem
 
 when@test:
     doctrine:
@@ -32,9 +58,15 @@ when@test:
 when@prod:
     doctrine:
         orm:
+            # Cache des métadonnées (définitions des entités)
+            metadata_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            # Cache des requêtes DQL parsées
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool
+            # Cache des résultats de requêtes
             result_cache_driver:
                 type: pool
                 pool: doctrine.result_cache_pool

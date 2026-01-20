@@ -23,11 +23,16 @@ class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne toutes les catégories triées par nom
+     * Retourne toutes les catégories triées par nom (avec cache)
      */
     public function findAllOrderedByName(): array
     {
-        return $this->findBy([], ['name' => 'ASC']);
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            // Cache le résultat pendant 10 minutes (les catégories changent rarement)
+            ->enableResultCache(600, 'all_categories_ordered')
+            ->getResult();
     }
 
     //    /**

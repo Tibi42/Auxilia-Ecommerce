@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Entité représentant une catégorie de produits
  */
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\Index(columns: ['name'], name: 'idx_category_name')]
+#[ORM\Index(columns: ['slug'], name: 'idx_category_slug')]
 class Category
 {
     /**

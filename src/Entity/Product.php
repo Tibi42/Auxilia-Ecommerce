@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
  * Entité représentant un produit de la boutique
  */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Index(columns: ['category'], name: 'idx_product_category')]
+#[ORM\Index(columns: ['is_featured'], name: 'idx_product_featured')]
+#[ORM\Index(columns: ['price'], name: 'idx_product_price')]
+#[ORM\Index(columns: ['name'], name: 'idx_product_name')]
+#[ORM\Index(columns: ['category', 'is_featured'], name: 'idx_product_category_featured')]
 class Product
 {
     /**

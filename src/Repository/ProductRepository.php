@@ -83,6 +83,43 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
+     * Récupère les produits vedettes avec cache pour la page d'accueil
+     * 
+     * @param int $limit Nombre maximum de produits à retourner
+     * @return Product[] Liste des produits vedettes
+     */
+    public function findFeaturedProducts(int $limit = 8): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.isFeatured = :featured')
+            ->setParameter('featured', true)
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            // Cache le résultat pendant 5 minutes (utile en production)
+            ->enableResultCache(300, 'featured_products_' . $limit)
+            ->getResult();
+    }
+
+    /**
+     * Recherche de produits optimisée avec sélection des colonnes nécessaires uniquement
+     * 
+     * @param string $query Le terme de recherche
+     * @param int $limit Nombre maximum de résultats
+     * @return array Tableau de données produits (pas d'entités pour alléger)
+     */
+    public function searchForAutocomplete(string $query, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.name, p.price, p.description, p.imageName')
+            ->andWhere('p.name LIKE :q OR p.description LIKE :q')
+            ->setParameter('q', '%' . $query . '%')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
      * Récupère toutes les catégories distinctes
      * 
      * @return string[] Liste des catégories uniques
@@ -93,7 +130,10 @@ class ProductRepository extends ServiceEntityRepository
             ->select('DISTINCT p.category')
             ->orderBy('p.category', 'ASC');
 
-        $results = $qb->getQuery()->getResult();
+        $results = $qb->getQuery()
+            // Cache le résultat pendant 10 minutes
+            ->enableResultCache(600, 'distinct_categories')
+            ->getResult();
         
         // Extraire les valeurs de catégories du tableau associatif
         return array_map(function($row) {
