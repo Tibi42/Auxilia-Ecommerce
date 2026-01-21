@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Repository\NewsletterRepository;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
@@ -22,6 +23,7 @@ final class DashboardController extends AbstractController
      * @param ProductRepository $productRepository Le repository pour les statistiques produits
      * @param UserRepository $userRepository Le repository pour les statistiques utilisateurs
      * @param OrderRepository $orderRepository Le repository pour les statistiques commandes
+     * @param NewsletterRepository $newsletterRepository Le repository pour les statistiques newsletter
      * @return Response Une instance de Response vers la vue du dashboard
      */
     #[Route('/admin/dashboard', name: 'app_admin_dashboard')]
@@ -29,7 +31,8 @@ final class DashboardController extends AbstractController
         ProductRepository $productRepository,
         UserRepository $userRepository,
         OrderRepository $orderRepository,
-        \App\Repository\TestimonialRepository $testimonialRepository
+        \App\Repository\TestimonialRepository $testimonialRepository,
+        NewsletterRepository $newsletterRepository
     ): Response {
         // Sécurité : Vérification explicite du rôle admin
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -38,6 +41,7 @@ final class DashboardController extends AbstractController
             'total_users' => $userRepository->count([]),
             'total_orders' => $orderRepository->count([]),
             'total_testimonials' => $testimonialRepository->count([]),
+            'total_newsletter' => $newsletterRepository->countActiveSubscribers(),
             'low_stock_products' => count($productRepository->createQueryBuilder('p')
                 ->where('p.stock < :threshold')
                 ->setParameter('threshold', 10)
@@ -49,6 +53,7 @@ final class DashboardController extends AbstractController
         $recentUsers = $userRepository->findBy([], ['id' => 'DESC'], 5);
         $recentOrders = $orderRepository->findBy([], ['id' => 'DESC'], 5);
         $recentTestimonials = $testimonialRepository->findBy([], ['id' => 'DESC'], 5);
+        $recentNewsletter = $newsletterRepository->findRecentSubscribers(5);
 
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => $stats,
@@ -56,6 +61,7 @@ final class DashboardController extends AbstractController
             'recent_users' => $recentUsers,
             'recent_orders' => $recentOrders,
             'recent_testimonials' => $recentTestimonials,
+            'recent_newsletter' => $recentNewsletter,
         ]);
     }
 }

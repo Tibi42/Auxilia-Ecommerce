@@ -30,6 +30,9 @@
 			<a href="{{ path('app_admin_products', {'stock': 'low'}) }}" class="btn" style="background-color: #ef4444; color: white; text-align: center; padding: 1rem;">
 				⚠️ Gestion du stock
 			</a>
+			<a href="{{ path('app_admin_newsletter') }}" class="btn" style="background-color: #ec4899; color: white; text-align: center; padding: 1rem;">
+				📧 Newsletter
+			</a>
 			<a href="{{ path('app_product') }}" class="btn" style="background-color: #10b981; color: white; text-align: center; padding: 1rem;">
 				🌐 Voir le site
 			</a>
@@ -81,6 +84,16 @@
 				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.low_stock_products }}</p>
 				<span style="font-size: 0.9rem; opacity: 0.9; display: block;">Produits à réapprovisionner</span>
 				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Voir tous →</span>
+			</div>
+		</a>
+
+		<a href="{{ path('app_admin_newsletter') }}" class="dashboard-card" style="text-decoration: none;">
+			<div style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 2rem; border-radius: 12px; color: white;">
+				<div style="font-size: 3rem; margin-bottom: 0.5rem;">📧</div>
+				<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; opacity: 0.9;">Newsletter</h3>
+				<p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_newsletter|default(0) }}</p>
+				<span style="font-size: 0.9rem; opacity: 0.9; display: block;">Abonnés actifs</span>
+				<span style="color: white; text-decoration: underline; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">Gérer →</span>
 			</div>
 		</a>
 	</div>
@@ -167,6 +180,32 @@
 							<p style="font-size: 0.9rem; color: var(--color-text-light); margin: 0; line-height: 1.4;">{{ t.content|length > 100 ? t.content|slice(0, 100) ~ '...' : t.content }}</p>
 						</div>
 					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+
+	<!-- Derniers abonnés Newsletter -->
+	{% if recent_newsletter is defined and recent_newsletter|length > 0 %}
+	<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; margin-bottom: 3rem;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+			<h2 style="font-size: 1.5rem; color: var(--color-primary); margin: 0;">
+				<i class="fas fa-envelope me-2" style="color: #ec4899;"></i>Derniers abonnés Newsletter
+			</h2>
+			<a href="{{ path('app_admin_newsletter') }}" style="color: var(--color-primary); text-decoration: none; font-size: 0.9rem;">Gérer tout →</a>
+		</div>
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+			{% for subscriber in recent_newsletter %}
+				<div style="padding: 1rem; background-color: var(--color-light); border-radius: 8px; display: flex; align-items: center; gap: 1rem;">
+					<div style="width: 45px; height: 45px; background: linear-gradient(135deg, #ec4899, #be185d); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+						{{ subscriber.email|slice(0,1)|upper }}
+					</div>
+					<div style="flex: 1; min-width: 0;">
+						<p style="margin: 0; font-weight: 500; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ subscriber.email }}</p>
+						<p style="margin: 0; font-size: 0.8rem; color: var(--color-text-light);">{{ subscriber.subscribedAt|date('d/m/Y à H:i') }}</p>
+					</div>
+					<span style="padding: 0.2rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; background-color: #dcfce7; color: #166534;">Actif</span>
 				</div>
 			{% endfor %}
 		</div>
