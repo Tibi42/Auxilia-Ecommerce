@@ -41,9 +41,9 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
         $csp = "default-src 'self'; " .
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://cdn.jsdelivr.net https://kit.fontawesome.com https://cdnjs.cloudflare.com https://ga.jspm.io; " .
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://ka-f.fontawesome.com https://cdnjs.cloudflare.com; " .
-            "img-src 'self' data: https://images.unsplash.com https://picsum.photos https://vectorlogo.zone https://i.pravatar.cc; " .
+            "img-src 'self' data: https://images.unsplash.com https://picsum.photos https://vectorlogo.zone https://www.vectorlogo.zone https://i.pravatar.cc; " .
             "font-src 'self' data: https://fonts.gstatic.com https://ka-f.fontawesome.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-            "connect-src 'self' https://ka-f.fontawesome.com; " .
+            "connect-src 'self' https://ka-f.fontawesome.com https://vectorlogo.zone https://www.vectorlogo.zone; " .
             "frame-ancestors 'none'; " .
             "base-uri 'self'; " .
             "form-action 'self'; " .
