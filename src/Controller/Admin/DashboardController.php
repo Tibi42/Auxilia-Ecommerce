@@ -36,6 +36,7 @@ final class DashboardController extends AbstractController
     ): Response {
         // Sécurité : Vérification explicite du rôle admin
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $stats = [
             'total_products' => $productRepository->count([]),
             'total_users' => $userRepository->count([]),
@@ -49,14 +50,32 @@ final class DashboardController extends AbstractController
                 ->getResult()),
         ];
 
+        // Statistiques de ventes
+        $salesStats = [
+            'total_revenue' => $orderRepository->getTotalRevenue(),
+            'monthly_revenue' => $orderRepository->getMonthlyRevenue(),
+            'today_revenue' => $orderRepository->getTodayRevenue(),
+            'average_order' => $orderRepository->getAverageOrderValue(),
+            'orders_by_status' => $orderRepository->countByStatus(),
+        ];
+
         $recentProducts = $productRepository->findBy([], ['id' => 'DESC'], 5);
         $recentUsers = $userRepository->findBy([], ['id' => 'DESC'], 5);
         $recentOrders = $orderRepository->findBy([], ['id' => 'DESC'], 5);
         $recentTestimonials = $testimonialRepository->findBy([], ['id' => 'DESC'], 5);
         $recentNewsletter = $newsletterRepository->findRecentSubscribers(5);
 
+        // Données pour les graphiques
+        $salesLast7Days = $orderRepository->getSalesLast7Days();
+        $salesLast6Months = $orderRepository->getSalesLast6Months();
+        $topProducts = $orderRepository->getTopSellingProducts(5);
+
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => $stats,
+            'sales_stats' => $salesStats,
+            'sales_last_7_days' => $salesLast7Days,
+            'sales_last_6_months' => $salesLast6Months,
+            'top_products' => $topProducts,
             'recent_products' => $recentProducts,
             'recent_users' => $recentUsers,
             'recent_orders' => $recentOrders,

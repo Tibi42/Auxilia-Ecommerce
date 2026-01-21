@@ -39,6 +39,163 @@
 		</div>
 	</div>
 
+	<!-- Statistiques de Ventes -->
+	<div style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); padding: 2rem; border-radius: 16px; margin-bottom: 3rem; color: white;">
+		<h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+			<i class="fas fa-chart-line"></i> Statistiques de Ventes
+		</h2>
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+			<div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+					<i class="fas fa-euro-sign" style="font-size: 1.5rem; opacity: 0.8;"></i>
+					<span style="opacity: 0.8; font-size: 0.9rem;">CA Total</span>
+				</div>
+				<p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ sales_stats.total_revenue|number_format(2, ',', ' ') }} €</p>
+			</div>
+			<div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+					<i class="fas fa-calendar-alt" style="font-size: 1.5rem; opacity: 0.8;"></i>
+					<span style="opacity: 0.8; font-size: 0.9rem;">CA ce mois</span>
+				</div>
+				<p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ sales_stats.monthly_revenue|number_format(2, ',', ' ') }} €</p>
+			</div>
+			<div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+					<i class="fas fa-clock" style="font-size: 1.5rem; opacity: 0.8;"></i>
+					<span style="opacity: 0.8; font-size: 0.9rem;">CA aujourd'hui</span>
+				</div>
+				<p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ sales_stats.today_revenue|number_format(2, ',', ' ') }} €</p>
+			</div>
+			<div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px);">
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+					<i class="fas fa-shopping-basket" style="font-size: 1.5rem; opacity: 0.8;"></i>
+					<span style="opacity: 0.8; font-size: 0.9rem;">Panier moyen</span>
+				</div>
+				<p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ sales_stats.average_order|number_format(2, ',', ' ') }} €</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Graphiques de ventes -->
+	<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+		<!-- Graphique des 7 derniers jours -->
+		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+			<h3 style="font-size: 1.25rem; color: var(--color-primary); margin: 0 0 1.5rem 0;">
+				<i class="fas fa-chart-bar me-2"></i>Ventes des 7 derniers jours
+			</h3>
+			<div style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; gap: 0.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0;">
+				{% set max_revenue = 1 %}
+				{% for day in sales_last_7_days %}
+					{% if day.revenue > max_revenue %}{% set max_revenue = day.revenue %}{% endif %}
+				{% endfor %}
+				{% for day in sales_last_7_days %}
+					{% set height = max_revenue > 0 ? (day.revenue / max_revenue * 150) : 0 %}
+					<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+						<span style="font-size: 0.7rem; color: var(--color-text-light);">{{ day.revenue|number_format(0, ',', ' ') }}€</span>
+						<div style="width: 100%; max-width: 40px; height: {{ height > 5 ? height : 5 }}px; background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%); border-radius: 4px 4px 0 0; transition: all 0.3s;"></div>
+					</div>
+				{% endfor %}
+			</div>
+			<div style="display: flex; justify-content: space-between; padding-top: 0.75rem;">
+				{% for day in sales_last_7_days %}
+					<div style="flex: 1; text-align: center;">
+						<span style="font-size: 0.75rem; color: var(--color-text-light);">{{ day.day }}</span><br>
+						<span style="font-size: 0.65rem; color: var(--color-text-light);">{{ day.date }}</span>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+
+		<!-- Répartition par statut -->
+		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+			<h3 style="font-size: 1.25rem; color: var(--color-primary); margin: 0 0 1.5rem 0;">
+				<i class="fas fa-pie-chart me-2"></i>Commandes par statut
+			</h3>
+			<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+				{% set status_colors = {
+					'pending': '#f59e0b',
+					'paid': '#10b981',
+					'confirmed': '#10b981',
+					'shipped': '#8b5cf6',
+					'delivered': '#3b82f6',
+					'cancelled': '#ef4444'
+				} %}
+				{% set status_labels = {
+					'pending': 'En attente',
+					'paid': 'Payée',
+					'confirmed': 'Confirmée',
+					'shipped': 'Expédiée',
+					'delivered': 'Livrée',
+					'cancelled': 'Annulée'
+				} %}
+				{% for status, count in sales_stats.orders_by_status %}
+					<div style="display: flex; align-items: center; gap: 1rem;">
+						<div style="width: 12px; height: 12px; border-radius: 50%; background-color: {{ status_colors[status]|default('#6b7280') }};"></div>
+						<span style="flex: 1; font-size: 0.9rem;">{{ status_labels[status]|default(status) }}</span>
+						<span style="font-weight: bold; background-color: {{ status_colors[status]|default('#6b7280') }}20; color: {{ status_colors[status]|default('#6b7280') }}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem;">{{ count }}</span>
+					</div>
+				{% else %}
+					<p style="color: var(--color-text-light); text-align: center;">Aucune commande</p>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+	<!-- Ventes mensuelles et Top produits -->
+	<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+		<!-- Graphique des 6 derniers mois -->
+		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+			<h3 style="font-size: 1.25rem; color: var(--color-primary); margin: 0 0 1.5rem 0;">
+				<i class="fas fa-chart-area me-2"></i>Évolution sur 6 mois
+			</h3>
+			<div style="display: flex; align-items: flex-end; justify-content: space-between; height: 180px; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0;">
+				{% set max_monthly = 1 %}
+				{% for month in sales_last_6_months %}
+					{% if month.revenue > max_monthly %}{% set max_monthly = month.revenue %}{% endif %}
+				{% endfor %}
+				{% for month in sales_last_6_months %}
+					{% set height = max_monthly > 0 ? (month.revenue / max_monthly * 130) : 0 %}
+					<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+						<span style="font-size: 0.7rem; color: var(--color-text-light);">{{ month.revenue|number_format(0, ',', ' ') }}€</span>
+						<div style="width: 100%; height: {{ height > 5 ? height : 5 }}px; background: linear-gradient(180deg, #10b981 0%, #059669 100%); border-radius: 4px 4px 0 0;"></div>
+					</div>
+				{% endfor %}
+			</div>
+			<div style="display: flex; justify-content: space-between; padding-top: 0.75rem;">
+				{% for month in sales_last_6_months %}
+					<div style="flex: 1; text-align: center;">
+						<span style="font-size: 0.8rem; color: var(--color-text-light);">{{ month.month }}</span>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+
+		<!-- Top produits vendus -->
+		<div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem;">
+			<h3 style="font-size: 1.25rem; color: var(--color-primary); margin: 0 0 1.5rem 0;">
+				<i class="fas fa-trophy me-2" style="color: #f59e0b;"></i>Top 5 produits vendus
+			</h3>
+			{% if top_products|length > 0 %}
+				<div style="display: flex; flex-direction: column; gap: 1rem;">
+					{% for idx, product in top_products %}
+						<div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background-color: var(--color-light); border-radius: 8px;">
+							<div style="width: 32px; height: 32px; background: {{ idx == 0 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : (idx == 1 ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : (idx == 2 ? 'linear-gradient(135deg, #d97706, #92400e)' : 'linear-gradient(135deg, var(--color-primary), var(--color-accent))')) }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.85rem;">
+								{{ idx + 1 }}
+							</div>
+							<div style="flex: 1; min-width: 0;">
+								<p style="margin: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ product.name }}</p>
+								<p style="margin: 0; font-size: 0.8rem; color: var(--color-text-light);">{{ product.totalSold }} vendus</p>
+							</div>
+							<span style="font-weight: bold; color: var(--color-primary);">{{ product.totalRevenue|number_format(0, ',', ' ') }} €</span>
+						</div>
+					{% endfor %}
+				</div>
+			{% else %}
+				<p style="color: var(--color-text-light); text-align: center; padding: 2rem;">Aucune vente enregistrée</p>
+			{% endif %}
+		</div>
+	</div>
+
 	<!-- Statistiques -->
 	<div class="dashboard-stats-grid" style="margin-bottom: 3rem;">
 		<a href="{{ path('app_admin_products') }}" class="dashboard-card" style="text-decoration: none;">
