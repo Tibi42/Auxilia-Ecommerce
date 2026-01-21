@@ -29,9 +29,15 @@ final class CartController extends AbstractController
      * Ajoute un produit au panier
      */
     #[Route('/cart/add/{id}', name: 'cart_add')]
-    public function add(int $id, CartService $cartService): Response
+    public function add(int $id, CartService $cartService, Request $request): Response
     {
         $cartService->add($id);
+        $this->addFlash('success', 'Produit ajouté au panier avec succès !');
+
+        $referer = $request->headers->get('referer');
+        if ($referer) {
+            return $this->redirect($referer);
+        }
 
         return $this->redirectToRoute('cart_index');
     }
