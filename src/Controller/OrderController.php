@@ -236,7 +236,8 @@ class OrderController extends AbstractController
         OrderRepository $orderRepository,
         EntityManagerInterface $entityManager,
         CartService $cartService,
-        \App\Service\OrderService $orderService
+        \App\Service\OrderService $orderService,
+        \Psr\Log\LoggerInterface $logger
     ): Response {
         $sessionId = $request->query->get('session_id');
 
@@ -265,15 +266,25 @@ class OrderController extends AbstractController
                 if ($order && $session->payment_status === 'paid') {
                     // Mettre à jour la commande si elle est encore en pending
                     if ($order->getStatus() === 'pending') {
+                        $logger->info('Controller: Order found in pending, completing payment', ['order_id' => $order->getId()]);
                         $orderService->completePayment($order, $session->payment_intent);
+                    } else {
+                        $logger->info('Controller: Order found but status is ' . $order->getStatus(), ['order_id' => $order->getId()]);
                     }
 
                     // Toujours vider le panier après un paiement réussi
                     $cartService->clear();
+                } else {
+                    $logger->warning('Controller: Order not found or session not paid', [
+                        'order_found' => (bool)$order,
+                        'payment_status' => $session->payment_status ?? 'unknown'
+                    ]);
                 }
             } catch (\Exception $e) {
                 // Log l'erreur pour debug
-                error_log('Stripe success error: ' . $e->getMessage());
+                $logger->error('Stripe success error: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString()
+                ]);
             }
         }
 

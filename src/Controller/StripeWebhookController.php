@@ -64,6 +64,7 @@ class StripeWebhookController extends AbstractController
 
         // Traitement des différents types d'événements
         $response = new Response('OK', Response::HTTP_OK);
+
         switch ($event->type) {
             case 'checkout.session.completed':
                 $response = $this->handleCheckoutSessionCompleted($event->data->object, $orderRepository);

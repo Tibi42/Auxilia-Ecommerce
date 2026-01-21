@@ -24,49 +24,44 @@ class OrderService
      */
     public function completePayment(Order $order, ?string $paymentIntentId = null): void
     {
-        // Ne traiter que si la commande est en attente
+        $this->logger->info('OrderService: Starting payment completion for order ' . $order->getId());
+
+        // On ne refresh PAS ici, car cela pourrait annuler des changements faits juste avant dans le contrôleur 
+        // (comme le stripeSessionId) si le flush n'a pas encore eu lieu.
+
         if ($order->getStatus() !== 'pending') {
-            $this->logger->info('Order already processed or not pending', [
-                'order_id' => $order->getId(),
-                'status' => $order->getStatus()
-            ]);
+            $this->logger->info('OrderService: Order ' . $order->getId() . ' status is ' . $order->getStatus() . ', skipping.');
             return;
         }
 
-        $this->entityManager->beginTransaction();
         try {
             $order->setStatus('paid');
             if ($paymentIntentId) {
                 $order->setStripePaymentIntentId($paymentIntentId);
             }
 
-            // Décrémenter le stock pour chaque article
-            foreach ($order->getOrderItems() as $orderItem) {
-                $product = $orderItem->getProduct();
-                if ($product && $product->getStock() !== null) {
-                    $newStock = $product->getStock() - $orderItem->getQuantity();
-                    $product->setStock(max(0, $newStock));
+            // On s'assure que l'ordre est tracké
+            $this->entityManager->persist($order);
 
-                    $this->logger->info('Decrementing stock for product', [
-                        'product_id' => $product->getId(),
-                        'quantity' => $orderItem->getQuantity(),
-                        'new_stock' => $product->getStock()
-                    ]);
+            $items = $order->getOrderItems();
+            $this->logger->info('OrderService: Processing ' . count($items) . ' items for order ' . $order->getId());
+
+            foreach ($items as $item) {
+                $product = $item->getProduct();
+                if ($product && $product->getStock() !== null) {
+                    $oldStock = $product->getStock();
+                    $newStock = max(0, $oldStock - $item->getQuantity());
+                    $product->setStock($newStock);
+
+                    $this->logger->info('OrderService: Stock updated for product ' . $product->getId() . ': ' . $oldStock . ' -> ' . $newStock);
                 }
             }
 
             $this->entityManager->flush();
-            $this->entityManager->commit();
-
-            $this->logger->info('Order marked as paid and stock updated', [
-                'order_id' => $order->getId(),
-                'payment_intent' => $paymentIntentId
-            ]);
+            $this->logger->info('OrderService: Payment completion successful for order ' . $order->getId());
         } catch (\Exception $e) {
-            $this->entityManager->rollback();
-            $this->logger->error('Error completing payment for order', [
-                'order_id' => $order->getId(),
-                'error' => $e->getMessage()
+            $this->logger->error('OrderService: Error during payment completion: ' . $e->getMessage(), [
+                'order_id' => $order->getId()
             ]);
             throw $e;
         }
