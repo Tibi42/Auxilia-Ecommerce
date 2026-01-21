@@ -35,29 +35,43 @@ final class HomeController extends AbstractController
             ];
         }
 
-        // Si aucun témoignage en base, on garde les mocks pour ne pas laisser la section vide au début
+        // Si aucun témoignage en base, on affiche des témoignages sur la coopérative de vin
         if (empty($testimonials)) {
             $testimonials = [
                 [
-                    'author' => 'Marie Laurent',
+                    'author' => 'Marie-Claire Fontaine',
                     'rating' => 5,
-                    'content' => 'Une expérience d\'achat incroyable ! Les produits sont de très haute qualité et la livraison a été ultra rapide.',
-                    'avatar' => 'https://i.pravatar.cc/150?u=marie',
-                    'date' => 'Compte de démonstration'
+                    'content' => 'Un Côtes-du-Rhône d\'une richesse exceptionnelle ! On sent vraiment le travail passionné des vignerons. Je commande régulièrement pour mes repas de famille.',
+                    'avatar' => 'https://i.pravatar.cc/150?u=marieclaire',
+                    'date' => 'Cliente fidèle depuis 2019'
                 ],
                 [
-                    'author' => 'Jean-Pierre Martin',
+                    'author' => 'Jean-Philippe Moreau',
+                    'rating' => 5,
+                    'content' => 'Restaurateur depuis 20 ans, j\'ai enfin trouvé ma cave de confiance. Les conseils du sommelier sont précieux et les vins subliment mes plats. Une coopérative qui mérite d\'être connue !',
+                    'avatar' => 'https://i.pravatar.cc/150?u=jeanphilippe',
+                    'date' => 'Chef restaurateur à Lyon'
+                ],
+                [
+                    'author' => 'Isabelle Dupont',
+                    'rating' => 5,
+                    'content' => 'La visite du domaine était magique. Découvrir le savoir-faire de ces vignerons passionnés et déguster directement dans les caves... Une expérience inoubliable que je recommande à tous les amateurs de vin.',
+                    'avatar' => 'https://i.pravatar.cc/150?u=isabelle',
+                    'date' => 'Œnophile amateur'
+                ],
+                [
+                    'author' => 'François Leroy',
                     'rating' => 4,
-                    'content' => 'Très satisfait de mon nouvel ordinateur. Le service client a été de bon conseil.',
-                    'avatar' => 'https://i.pravatar.cc/150?u=jeanpierre',
-                    'date' => 'Compte de démonstration'
+                    'content' => 'Excellent rapport qualité-prix sur toute la gamme. Le rosé d\'été est devenu incontournable pour nos apéritifs en terrasse. Livraison rapide et soignée, les bouteilles arrivent en parfait état.',
+                    'avatar' => 'https://i.pravatar.cc/150?u=francois',
+                    'date' => 'Client depuis 2021'
                 ],
                 [
-                    'author' => 'Sophie Durand',
+                    'author' => 'Catherine Berger',
                     'rating' => 5,
-                    'content' => 'Le meilleur site e-commerce que j\'ai utilisé récemment. L\'interface est fluide.',
-                    'avatar' => 'https://i.pravatar.cc/150?u=sophie',
-                    'date' => 'Compte de démonstration'
+                    'content' => 'J\'ai offert un coffret découverte pour Noël et toute la famille était ravie. Le Châteauneuf-du-Pape a fait l\'unanimité ! Bravo pour cette sélection qui met en valeur le terroir.',
+                    'avatar' => 'https://i.pravatar.cc/150?u=catherine',
+                    'date' => 'Cliente satisfaite'
                 ]
             ];
         }
