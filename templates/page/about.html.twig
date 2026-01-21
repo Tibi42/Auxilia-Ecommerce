@@ -1,17 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Domaine - Auxilia E-commerce
-{% endblock %}
+{% block title %}Notre Domaine - La Coopé des Vignerons | Auxilia E-commerce{% endblock %}
+
+{% block meta_description %}Découvrez l'histoire et le savoir-faire de notre domaine viticole. Une passion transmise de génération en génération pour des vins d'exception.{% endblock %}
 
 {% block body %}
-	<div class="container py-5">
-		<header class="text-center mb-5 pb-4">
-			<h1 class="display-3 fw-bold text-primary mb-3">Notre Domaine</h1>
-			<p class="lead text-muted mx-auto" style="max-width: 800px;">
-				Découvrez l'histoire, la passion et les valeurs qui font d'Auxilia E-commerce votre partenaire de confiance.
-			</p>
-			<div class="mx-auto bg-primary rounded-pill mt-4" style="width: 60px; height: 4px;"></div>
-		</header>
+	<!-- Hero Section avec vidéo de vendanges en fond -->
+	<section class="position-relative overflow-hidden" style="min-height: 70vh;">
+		<!-- Vidéo de fond -->
+		<video autoplay muted loop playsinline class="position-absolute w-100 h-100" style="object-fit: cover; top: 0; left: 0; z-index: -2;">
+			<source src="{{ asset('assets/video/istockphoto-2171227196-640_adpp_is.mp4') }}" type="video/mp4">
+		</video>
+		<!-- Overlay sombre pour lisibilité -->
+		<div class="position-absolute w-100 h-100" style="top: 0; left: 0; z-index: -1; background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.7) 100%);"></div>
+		
+		<!-- Contenu du hero -->
+		<div class="container h-100 d-flex align-items-center justify-content-center text-center text-white py-5" style="min-height: 70vh;">
+			<div class="py-5">
+				<h1 class="display-2 fw-bold mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.5);">Notre Domaine</h1>
+				<p class="lead mb-4 mx-auto" style="max-width: 700px; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">
+					Découvrez l'histoire, la passion et le savoir-faire de nos vignerons qui perpétuent la tradition depuis des générations.
+				</p>
+				<div class="mx-auto bg-white rounded-pill mb-4" style="width: 80px; height: 4px;"></div>
+				<a href="#notre-histoire" class="btn btn-outline-light btn-lg rounded-pill mt-3">
+					<i class="fas fa-chevron-down me-2"></i>Découvrir
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<div class="container py-5" id="notre-histoire">
 
 		<div class="row justify-content-center mb-5 pb-5">
 			<div class="col-lg-10">
