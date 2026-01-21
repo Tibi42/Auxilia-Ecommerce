@@ -65,6 +65,24 @@ final class CartController extends AbstractController
     }
 
     /**
+     * Met à jour la quantité d'un produit dans le panier
+     */
+    #[Route('/cart/update/{id}', name: 'cart_update', methods: ['POST'])]
+    public function update(int $id, Request $request, CartService $cartService): Response
+    {
+        $quantity = (int) $request->request->get('quantity', 1);
+        if ($quantity > 0) {
+            $cartService->setQuantity($id, $quantity);
+            $this->addFlash('success', 'Quantité mise à jour.');
+        } else {
+            $cartService->deleteAll($id);
+            $this->addFlash('success', 'Produit retiré du panier.');
+        }
+
+        return $this->redirectToRoute('cart_index');
+    }
+
+    /**
      * Supprime plusieurs produits sélectionnés via des cases à cocher
      */
     #[Route('/cart/delete-selection', name: 'cart_delete_selection', methods: ['POST'])]

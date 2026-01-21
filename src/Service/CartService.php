@@ -22,7 +22,7 @@ class CartService
     private $security;
     private $entityManager;
     private ?array $fullCart = null;
-    
+
     /**
      * Indique si le panier a été modifié (pour sauvegarde différée)
      */
@@ -47,7 +47,7 @@ class CartService
         $this->security = $security;
         $this->entityManager = $entityManager;
     }
-    
+
     /**
      * Destructeur : sauvegarde le panier si modifié (flush différé)
      */
@@ -131,6 +131,27 @@ class CartService
             if (isset($cart[$id])) {
                 unset($cart[$id]);
             }
+        }
+
+        $this->getSession()->set('cart', $cart);
+        $this->markAsModified();
+        $this->fullCart = null;
+    }
+
+    /**
+     * Définit la quantité exacte d'un produit dans le panier
+     * 
+     * @param int $id L'identifiant du produit
+     * @param int $quantity La nouvelle quantité
+     */
+    public function setQuantity(int $id, int $quantity): void
+    {
+        $cart = $this->getSession()->get('cart', []);
+
+        if ($quantity > 0) {
+            $cart[$id] = $quantity;
+        } else {
+            unset($cart[$id]);
         }
 
         $this->getSession()->set('cart', $cart);
@@ -244,14 +265,14 @@ class CartService
         if ($user instanceof User) {
             $cart = $this->getSession()->get('cart', []);
             $user->setCart($cart);
-            
+
             // Vérifie que l'EntityManager est encore ouvert
             if ($this->entityManager->isOpen()) {
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
             }
         }
-        
+
         $this->cartModified = false;
     }
 
