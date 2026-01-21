@@ -121,8 +121,16 @@
 								</div>
 								<p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.75rem; line-height: 1.4;">
 									<i class="fas fa-info-circle"></i>
-									Formats acceptés : JPG, PNG, WEBP (Max: 2Mo).
+									Formats acceptés : JPG, PNG, WEBP (Max: 5Mo).
 								</p>
+								<div id="upload-error" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 0.85rem;">
+									<i class="fas fa-exclamation-triangle me-1"></i>
+									<span id="error-message"></span>
+								</div>
+								<div id="file-info" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 8px; color: #166534; font-size: 0.85rem;">
+									<i class="fas fa-check-circle me-1"></i>
+									<span id="file-info-text"></span>
+								</div>
 							</div>
 						</div>
 					</section>
@@ -223,124 +231,188 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-const imageInput = document.getElementById('product-image-input') || document.querySelector('input[type="file"]');
-const imagePreview = document.getElementById('image-preview');
-const imagePlaceholder = document.getElementById('image-placeholder');
-const imageContainer = document.getElementById('image-preview-container');
-const uploadOverlay = document.getElementById('upload-overlay');
-const fileNameDisplay = document.querySelector('#file-name-display span');
-const resetBtn = document.getElementById('reset-image');
+			const imageInput = document.getElementById('product-image-input') || document.querySelector('input[type="file"]');
+			const imagePreview = document.getElementById('image-preview');
+			const imagePlaceholder = document.getElementById('image-placeholder');
+			const imageContainer = document.getElementById('image-preview-container');
+			const uploadOverlay = document.getElementById('upload-overlay');
+			const fileNameDisplay = document.querySelector('#file-name-display span');
+			const resetBtn = document.getElementById('reset-image');
+			const uploadError = document.getElementById('upload-error');
+			const errorMessage = document.getElementById('error-message');
+			const fileInfo = document.getElementById('file-info');
+			const fileInfoText = document.getElementById('file-info-text');
 
-if (! imageInput || ! imageContainer) 
-return;
+			// Configuration
+			const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
+			const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+			const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
+			if (!imageInput || !imageContainer) return;
 
+			function showError(message) {
+				if (uploadError && errorMessage) {
+					errorMessage.textContent = message;
+					uploadError.style.display = 'block';
+					if (fileInfo) fileInfo.style.display = 'none';
+				}
+			}
 
-function handleImageFile(file) {
-if (! file || ! file.type.startsWith('image/')) 
-return;
+			function hideError() {
+				if (uploadError) uploadError.style.display = 'none';
+			}
 
+			function showFileInfo(file) {
+				if (fileInfo && fileInfoText) {
+					const sizeMo = (file.size / (1024 * 1024)).toFixed(2);
+					fileInfoText.textContent = `${file.name} (${sizeMo} Mo) - Prêt à télécharger`;
+					fileInfo.style.display = 'block';
+					hideError();
+				}
+			}
 
+			function validateFile(file) {
+				// Vérifier le type MIME
+				if (!ALLOWED_TYPES.includes(file.type)) {
+					showError('Format non supporté. Utilisez JPG, PNG ou WEBP.');
+					return false;
+				}
 
-const reader = new FileReader();
-reader.onload = function (e) {
-imagePreview.src = e.target.result;
-imagePreview.style.display = 'block';
-if (imagePlaceholder) 
-imagePlaceholder.style.display = 'none';
+				// Vérifier l'extension
+				const fileName = file.name.toLowerCase();
+				const hasValidExtension = ALLOWED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+				if (!hasValidExtension) {
+					showError('Extension de fichier non valide.');
+					return false;
+				}
 
+				// Vérifier la taille
+				if (file.size > MAX_FILE_SIZE) {
+					const sizeMo = (file.size / (1024 * 1024)).toFixed(2);
+					showError(`Fichier trop volumineux (${sizeMo} Mo). Maximum: 5 Mo.`);
+					return false;
+				}
 
-fileNameDisplay.textContent = file.name;
-resetBtn.style.display = 'block';
-imageContainer.style.borderColor = 'var(--color-primary)';
-imageContainer.style.borderStyle = 'solid';
-};
-reader.readAsDataURL(file);
-}
+				return true;
+			}
 
-// Prevent browser from opening the file when dropped outside the zone
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
-document.addEventListener(name, e => {
-if (! imageContainer.contains(e.target)) {
-e.preventDefault();
-}
-}, false);
-});
+			function handleImageFile(file) {
+				if (!file) return;
 
-// Sync input with drag and drop using DataTransfer for better compatibility
-imageContainer.addEventListener('drop', e => {
-e.preventDefault();
-e.stopPropagation();
+				// Validation
+				if (!validateFile(file)) {
+					resetImagePreview();
+					return;
+				}
 
-const files = e.dataTransfer.files;
-if (files.length) {
-try {
-const dt = new DataTransfer();
-dt.items.add(files[0]);
-imageInput.files = dt.files;
-imageInput.dispatchEvent(new Event('change', {bubbles: true}));
-} catch (err) {
-imageInput.files = files;
-imageInput.dispatchEvent(new Event('change', {bubbles: true}));
-}
-}
-});
+				const reader = new FileReader();
+				
+				reader.onload = function (e) {
+					// Vérification supplémentaire avec Image pour s'assurer que c'est une vraie image
+					const img = new Image();
+					img.onload = function() {
+						imagePreview.src = e.target.result;
+						imagePreview.style.display = 'block';
+						if (imagePlaceholder) imagePlaceholder.style.display = 'none';
 
-imageInput.addEventListener('change', e => {
-if (e.target.files.length) {
-handleImageFile(e.target.files[0]);
-}
-});
+						fileNameDisplay.textContent = file.name;
+						resetBtn.style.display = 'block';
+						imageContainer.style.borderColor = 'var(--color-primary)';
+						imageContainer.style.borderStyle = 'solid';
 
-// Visual feedback
-['dragenter', 'dragover'].forEach(name => {
-imageContainer.addEventListener(name, e => {
-e.preventDefault();
-e.stopPropagation();
-imageContainer.classList.add('active-drag');
-if (uploadOverlay) 
-uploadOverlay.style.display = 'flex';
+						showFileInfo(file);
+					};
+					img.onerror = function() {
+						showError('Le fichier ne semble pas être une image valide.');
+						resetImagePreview();
+					};
+					img.src = e.target.result;
+				};
 
+				reader.onerror = function() {
+					showError('Erreur lors de la lecture du fichier.');
+				};
 
-});
-});
+				reader.readAsDataURL(file);
+			}
 
-['dragleave', 'drop'].forEach(name => {
-imageContainer.addEventListener(name, e => {
-e.preventDefault();
-e.stopPropagation();
-imageContainer.classList.remove('active-drag');
-if (uploadOverlay) 
-uploadOverlay.style.display = 'none';
+			function resetImagePreview() {
+				imageInput.value = '';
+				imagePreview.style.display = 'none';
+				imagePreview.src = '';
+				if (imagePlaceholder) imagePlaceholder.style.display = 'block';
+				fileNameDisplay.textContent = 'Aucun fichier choisi';
+				resetBtn.style.display = 'none';
+				imageContainer.style.borderColor = '#cbd5e0';
+				imageContainer.style.borderStyle = 'dashed';
+				if (fileInfo) fileInfo.style.display = 'none';
+			}
 
+			// Prevent browser from opening the file when dropped outside the zone
+			['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
+				document.addEventListener(name, e => {
+					if (!imageContainer.contains(e.target)) {
+						e.preventDefault();
+					}
+				}, false);
+			});
 
-});
-});
+			// Sync input with drag and drop using DataTransfer for better compatibility
+			imageContainer.addEventListener('drop', e => {
+				e.preventDefault();
+				e.stopPropagation();
 
-// Click to upload
-imageContainer.addEventListener('click', (e) => {
-if (e.target === resetBtn || resetBtn.contains(e.target)) 
-return;
+				const files = e.dataTransfer.files;
+				if (files.length) {
+					try {
+						const dt = new DataTransfer();
+						dt.items.add(files[0]);
+						imageInput.files = dt.files;
+						handleImageFile(files[0]);
+					} catch (err) {
+						handleImageFile(files[0]);
+					}
+				}
+			});
 
+			imageInput.addEventListener('change', e => {
+				if (e.target.files.length) {
+					handleImageFile(e.target.files[0]);
+				}
+			});
 
-imageInput.click();
-});
+			// Visual feedback for drag
+			['dragenter', 'dragover'].forEach(name => {
+				imageContainer.addEventListener(name, e => {
+					e.preventDefault();
+					e.stopPropagation();
+					imageContainer.classList.add('active-drag');
+					if (uploadOverlay) uploadOverlay.style.display = 'flex';
+				});
+			});
 
-// Reset functionality
-resetBtn.addEventListener('click', (e) => {
-e.preventDefault();
-e.stopPropagation();
-imageInput.value = '';
-imagePreview.style.display = 'none';
-if (imagePlaceholder) 
-imagePlaceholder.style.display = 'block';
+			['dragleave', 'drop'].forEach(name => {
+				imageContainer.addEventListener(name, e => {
+					e.preventDefault();
+					e.stopPropagation();
+					imageContainer.classList.remove('active-drag');
+					if (uploadOverlay) uploadOverlay.style.display = 'none';
+				});
+			});
 
+			// Click to upload
+			imageContainer.addEventListener('click', (e) => {
+				if (e.target === resetBtn || (resetBtn && resetBtn.contains(e.target))) return;
+				imageInput.click();
+			});
 
-fileNameDisplay.textContent = 'Aucun fichier choisi';
-resetBtn.style.display = 'none';
-imageContainer.style.borderColor = '#cbd5e0';
-imageContainer.style.borderStyle = 'dashed';
-});
-});
+			// Reset functionality
+			resetBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				resetImagePreview();
+				hideError();
+			});
+		});
 	</script>
 {% endblock %}
