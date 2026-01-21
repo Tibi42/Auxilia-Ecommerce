@@ -95,8 +95,28 @@ final class ProductController extends AbstractController
                 $mimeType = $imageFile->getMimeType();
                 $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
                 
-                if (!in_array($mimeType, $allowedMimeTypes)) {
+                if (!in_array($mimeType, $allowedMimeTypes, true)) {
                     $this->addFlash('error', 'Type de fichier non autorisé.');
+                    return $this->redirectToRoute('app_admin_product_new');
+                }
+                
+                // Sécurité renforcée : Vérification du contenu réel avec getimagesize()
+                $imageInfo = @getimagesize($imageFile->getPathname());
+                if ($imageInfo === false) {
+                    $this->addFlash('error', 'Le fichier n\'est pas une image valide.');
+                    return $this->redirectToRoute('app_admin_product_new');
+                }
+                
+                // Vérification que le type d'image correspond
+                $allowedImageTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+                if (!in_array($imageInfo[2], $allowedImageTypes, true)) {
+                    $this->addFlash('error', 'Format d\'image non supporté.');
+                    return $this->redirectToRoute('app_admin_product_new');
+                }
+                
+                // Sécurité : Limiter la taille de l'image (max 5 Mo)
+                if ($imageFile->getSize() > 5 * 1024 * 1024) {
+                    $this->addFlash('error', 'L\'image ne doit pas dépasser 5 Mo.');
                     return $this->redirectToRoute('app_admin_product_new');
                 }
                 
@@ -173,8 +193,28 @@ final class ProductController extends AbstractController
                 $mimeType = $imageFile->getMimeType();
                 $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
                 
-                if (!in_array($mimeType, $allowedMimeTypes)) {
+                if (!in_array($mimeType, $allowedMimeTypes, true)) {
                     $this->addFlash('error', 'Type de fichier non autorisé.');
+                    return $this->redirectToRoute('app_admin_product_edit', ['id' => $product->getId()]);
+                }
+                
+                // Sécurité renforcée : Vérification du contenu réel avec getimagesize()
+                $imageInfo = @getimagesize($imageFile->getPathname());
+                if ($imageInfo === false) {
+                    $this->addFlash('error', 'Le fichier n\'est pas une image valide.');
+                    return $this->redirectToRoute('app_admin_product_edit', ['id' => $product->getId()]);
+                }
+                
+                // Vérification que le type d'image correspond
+                $allowedImageTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+                if (!in_array($imageInfo[2], $allowedImageTypes, true)) {
+                    $this->addFlash('error', 'Format d\'image non supporté.');
+                    return $this->redirectToRoute('app_admin_product_edit', ['id' => $product->getId()]);
+                }
+                
+                // Sécurité : Limiter la taille de l'image (max 5 Mo)
+                if ($imageFile->getSize() > 5 * 1024 * 1024) {
+                    $this->addFlash('error', 'L\'image ne doit pas dépasser 5 Mo.');
                     return $this->redirectToRoute('app_admin_product_edit', ['id' => $product->getId()]);
                 }
                 

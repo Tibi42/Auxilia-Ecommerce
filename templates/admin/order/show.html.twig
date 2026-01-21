@@ -63,6 +63,7 @@
 							</span>
 
 							<form action="{{ path('app_admin_order_status_update', {'id': order.id}) }}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
+								<input type="hidden" name="_token" value="{{ csrf_token('order-status-' ~ order.id) }}">
 								<select name="status" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; background: #f8fafc; color: #334155;">
 									{% for status_key, status_data in status_info %}
 										<option value="{{ status_key }}" {% if order.status|lower == status_key %} selected {% endif %}>

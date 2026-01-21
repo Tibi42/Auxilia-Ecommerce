@@ -86,6 +86,12 @@ final class OrderController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+        // Sécurité : Validation du token CSRF
+        if (!$this->isCsrfTokenValid('order-status-' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('app_admin_orders');
+        }
+
         $order = $orderRepository->find($id);
 
         if (!$order) {
@@ -98,7 +104,7 @@ final class OrderController extends AbstractController
         // Liste des statuts valides (à synchroniser avec ceux utilisés ailleurs)
         $validStatuses = ['pending', 'paid', 'confirmed', 'shipped', 'delivered', 'cancelled'];
 
-        if ($newStatus && in_array($newStatus, $validStatuses)) {
+        if ($newStatus && in_array($newStatus, $validStatuses, true)) {
             $order->setStatus($newStatus);
             $entityManager->flush();
             $this->addFlash('success', 'Statut de la commande mis à jour avec succès.');

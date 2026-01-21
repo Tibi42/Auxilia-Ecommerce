@@ -70,14 +70,19 @@ final class CartController extends AbstractController
     #[Route('/cart/update/{id}', name: 'cart_update', methods: ['POST'])]
     public function update(int $id, Request $request, CartService $cartService): Response
     {
+        // Sécurité : Validation stricte de la quantité
         $quantity = (int) $request->request->get('quantity', 1);
-        if ($quantity > 0) {
-            $cartService->setQuantity($id, $quantity);
-            $this->addFlash('success', 'Quantité mise à jour.');
-        } else {
-            $cartService->deleteAll($id);
-            $this->addFlash('success', 'Produit retiré du panier.');
+        
+        // Contraintes de sécurité : minimum 1, maximum 99
+        if ($quantity < 1) {
+            $quantity = 1;
         }
+        if ($quantity > 99) {
+            $quantity = 99;
+            $this->addFlash('warning', 'Quantité maximale limitée à 99.');
+        }
+        
+        $cartService->setQuantity($id, $quantity);
 
         return $this->redirectToRoute('cart_index');
     }

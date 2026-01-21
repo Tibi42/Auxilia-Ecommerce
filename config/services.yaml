@@ -20,5 +20,10 @@ services:
     App\:
         resource: '../src/'
 
+    # Configuration du subscriber de sécurité avec l'environnement
+    App\EventSubscriber\SecurityHeadersSubscriber:
+        arguments:
+            $environment: '%kernel.environment%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
