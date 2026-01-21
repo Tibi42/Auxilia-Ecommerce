@@ -51,6 +51,18 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    /**
+     * Identifiant de la session Stripe Checkout
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSessionId = null;
+
+    /**
+     * Identifiant de paiement Stripe (payment intent)
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripePaymentIntentId = null;
+
     #[ORM\OneToMany(mappedBy: 'orderRef', targetEntity: OrderItem::class, orphanRemoval: true)]
     private $orderItems;
 
@@ -182,6 +194,42 @@ class Order
                 $orderItem->setOrderRef(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Récupère l'identifiant de session Stripe Checkout
+     */
+    public function getStripeSessionId(): ?string
+    {
+        return $this->stripeSessionId;
+    }
+
+    /**
+     * Définit l'identifiant de session Stripe Checkout
+     */
+    public function setStripeSessionId(?string $stripeSessionId): static
+    {
+        $this->stripeSessionId = $stripeSessionId;
+
+        return $this;
+    }
+
+    /**
+     * Récupère l'identifiant de paiement Stripe
+     */
+    public function getStripePaymentIntentId(): ?string
+    {
+        return $this->stripePaymentIntentId;
+    }
+
+    /**
+     * Définit l'identifiant de paiement Stripe
+     */
+    public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
+    {
+        $this->stripePaymentIntentId = $stripePaymentIntentId;
 
         return $this;
     }

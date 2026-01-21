@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\CartService;
+use App\Service\StripeService;
 use App\Repository\OrderRepository;
 use App\Entity\Order;
 use App\Entity\OrderItem;
@@ -12,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Contrôleur gérant les commandes côté client
@@ -124,15 +126,20 @@ class OrderController extends AbstractController
     }
 
     /**
-     * Valide la commande, crée l'entité Order et vide le panier
+     * Valide la commande, crée l'entité Order et redirige vers Stripe Checkout
      * 
      * @param CartService $cartService Le service gérant le panier
      * @param EntityManagerInterface $entityManager Le gestionnaire d'entités de Doctrine
-     * @return Response Une instance de Response redirigeant vers la page de succès
+     * @param StripeService $stripeService Le service Stripe
+     * @return Response Une instance de Response redirigeant vers Stripe Checkout
      */
     #[Route('/checkout/validate', name: 'app_order_validate', methods: ['POST'])]
-    public function validate(Request $request, CartService $cartService, EntityManagerInterface $entityManager): Response
-    {
+    public function validate(
+        Request $request,
+        CartService $cartService,
+        EntityManagerInterface $entityManager,
+        StripeService $stripeService
+    ): Response {
         if (!$this->isCsrfTokenValid('order-validate', $request->request->get('_token'))) {
             $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('cart_index');
@@ -151,11 +158,11 @@ class OrderController extends AbstractController
             return $this->redirectToRoute('cart_index');
         }
 
-        // Création de la commande
+        // Création de la commande avec statut "pending"
         $order = new Order();
         $order->setUser($user);
         $order->setDateat(new \DateTime());
-        $order->setStatus('paid');
+        $order->setStatus('pending');
         $order->setTotal($cartService->getTotal());
 
         $entityManager->persist($order);
@@ -165,43 +172,156 @@ class OrderController extends AbstractController
             $product = $item['product'];
             $quantity = $item['quantity'];
 
-            // Vérification du stock
+            // Vérification du stock (sans le soustraire encore)
             if ($product->getStock() !== null && $product->getStock() < $quantity) {
                 $this->addFlash('error', sprintf('Désolé, le produit "%s" n\'est plus disponible en quantité suffisante (Stock actuel : %d).', $product->getName(), $product->getStock()));
                 return $this->redirectToRoute('cart_index');
             }
 
-            // Soustraction du stock
-            if ($product->getStock() !== null) {
-                $product->setStock($product->getStock() - $quantity);
-            }
-
             $orderItem = new OrderItem();
-            $orderItem->setOrderRef($order);
             $orderItem->setProduct($product);
             $orderItem->setProductName($product->getName());
             $orderItem->setQuantity($quantity);
             $orderItem->setPrice($product->getPrice());
             $orderItem->setTotal((string)($product->getPrice() * $quantity));
+            
+            // Utiliser addOrderItem pour que la collection soit correctement mise à jour
+            $order->addOrderItem($orderItem);
             $entityManager->persist($orderItem);
         }
 
+        // Flush pour obtenir l'ID de la commande
         $entityManager->flush();
 
-        // Vidage du panier
-        $cartService->clear();
+        try {
+            // Création de la session Stripe Checkout
+            $checkoutSession = $stripeService->createCheckoutSession(
+                $order,
+                $this->generateUrl('app_order_success', ['session_id' => '{CHECKOUT_SESSION_ID}'], UrlGeneratorInterface::ABSOLUTE_URL),
+                $this->generateUrl('app_order_cancel', ['id' => $order->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+            );
 
-        return $this->redirectToRoute('app_order_success');
+            // Sauvegarde de l'ID de session Stripe
+            $order->setStripeSessionId($checkoutSession->id);
+            $entityManager->flush();
+
+            // Redirection vers Stripe Checkout
+            return $this->redirect($checkoutSession->url);
+
+        } catch (\Exception $e) {
+            // En cas d'erreur Stripe, marquer la commande comme annulée
+            // (on ne peut pas la supprimer car les OrderItems ont des contraintes FK)
+            $order->setStatus('cancelled');
+            $entityManager->flush();
+
+            // Afficher l'erreur détaillée pour le debug
+            $this->addFlash('error', 'Erreur Stripe: ' . $e->getMessage());
+            return $this->redirectToRoute('cart_index');
+        }
     }
 
     /**
-     * Affiche la page de succès après une commande
+     * Affiche la page de succès après un paiement Stripe réussi
      * 
+     * @param Request $request La requête HTTP
+     * @param StripeService $stripeService Le service Stripe
+     * @param OrderRepository $orderRepository Le repository des commandes
+     * @param EntityManagerInterface $entityManager Le gestionnaire d'entités
+     * @param CartService $cartService Le service gérant le panier
      * @return Response Une instance de Response contenant la vue de succès
      */
     #[Route('/checkout/success', name: 'app_order_success')]
-    public function success(): Response
-    {
+    public function success(
+        Request $request,
+        StripeService $stripeService,
+        OrderRepository $orderRepository,
+        EntityManagerInterface $entityManager,
+        CartService $cartService
+    ): Response {
+        $sessionId = $request->query->get('session_id');
+
+        if ($sessionId) {
+            try {
+                // Récupération de la session Stripe pour vérification
+                $session = $stripeService->retrieveSession($sessionId);
+
+                // Recherche de la commande associée via les métadonnées Stripe
+                // (plus fiable que stripe_session_id qui peut ne pas avoir été sauvé)
+                $order = null;
+                
+                // D'abord essayer par stripe_session_id
+                $order = $orderRepository->findOneBy(['stripeSessionId' => $sessionId]);
+                
+                // Si non trouvé, utiliser l'order_id des métadonnées Stripe
+                if (!$order && isset($session->metadata->order_id)) {
+                    $order = $orderRepository->find($session->metadata->order_id);
+                    
+                    // Mettre à jour le stripe_session_id si on a trouvé la commande
+                    if ($order) {
+                        $order->setStripeSessionId($sessionId);
+                    }
+                }
+
+                if ($order && $session->payment_status === 'paid') {
+                    // Mettre à jour la commande si elle est encore en pending
+                    if ($order->getStatus() === 'pending') {
+                        $order->setStatus('paid');
+                        $order->setStripePaymentIntentId($session->payment_intent);
+
+                        // Décrémenter le stock maintenant que le paiement est confirmé
+                        foreach ($order->getOrderItems() as $orderItem) {
+                            $product = $orderItem->getProduct();
+                            if ($product && $product->getStock() !== null) {
+                                $newStock = $product->getStock() - $orderItem->getQuantity();
+                                $product->setStock(max(0, $newStock));
+                            }
+                        }
+
+                        $entityManager->flush();
+                    }
+
+                    // Toujours vider le panier après un paiement réussi
+                    $cartService->clear();
+                }
+            } catch (\Exception $e) {
+                // Log l'erreur pour debug
+                error_log('Stripe success error: ' . $e->getMessage());
+            }
+        }
+        
+        // Vider le panier dans tous les cas si on arrive sur la page de succès avec un session_id valide
+        // (au cas où le try/catch aurait échoué mais le paiement est quand même valide)
+        if ($sessionId) {
+            $cartService->clear();
+        }
+
         return $this->render('order/success.html.twig');
+    }
+
+    /**
+     * Affiche la page d'annulation de paiement
+     * 
+     * @param int $id L'identifiant de la commande
+     * @param OrderRepository $orderRepository Le repository des commandes
+     * @param EntityManagerInterface $entityManager Le gestionnaire d'entités
+     * @return Response Une instance de Response contenant la vue d'annulation
+     */
+    #[Route('/checkout/cancel/{id}', name: 'app_order_cancel')]
+    public function cancel(
+        int $id,
+        OrderRepository $orderRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $order = $orderRepository->find($id);
+
+        // Annuler la commande si elle existe et est en attente
+        if ($order && $order->getStatus() === 'pending') {
+            $order->setStatus('cancelled');
+            $entityManager->flush();
+        }
+
+        $this->addFlash('warning', 'Votre paiement a été annulé. Vous pouvez réessayer à tout moment.');
+
+        return $this->redirectToRoute('cart_index');
     }
 }
