@@ -22,9 +22,10 @@ class StripeWebhookController extends AbstractController
 {
     public function __construct(
         private string $webhookSecret,
-        private LoggerInterface $logger
-    ) {
-    }
+        private LoggerInterface $logger,
+        private \App\Service\OrderService $orderService,
+        private EntityManagerInterface $entityManager
+    ) {}
 
     /**
      * Endpoint pour recevoir les webhooks Stripe
@@ -37,8 +38,7 @@ class StripeWebhookController extends AbstractController
     #[Route('/stripe/webhook', name: 'stripe_webhook', methods: ['POST'])]
     public function handleWebhook(
         Request $request,
-        OrderRepository $orderRepository,
-        EntityManagerInterface $entityManager
+        OrderRepository $orderRepository
     ): Response {
         $payload = $request->getContent();
         $sigHeader = $request->headers->get('Stripe-Signature');
@@ -63,24 +63,25 @@ class StripeWebhookController extends AbstractController
         }
 
         // Traitement des différents types d'événements
+        $response = new Response('OK', Response::HTTP_OK);
         switch ($event->type) {
             case 'checkout.session.completed':
-                $this->handleCheckoutSessionCompleted($event->data->object, $orderRepository, $entityManager);
+                $response = $this->handleCheckoutSessionCompleted($event->data->object, $orderRepository);
                 break;
 
             case 'checkout.session.expired':
-                $this->handleCheckoutSessionExpired($event->data->object, $orderRepository, $entityManager);
+                $response = $this->handleCheckoutSessionExpired($event->data->object, $orderRepository);
                 break;
 
             case 'payment_intent.payment_failed':
-                $this->handlePaymentFailed($event->data->object, $orderRepository, $entityManager);
+                $response = $this->handlePaymentFailed($event->data->object, $orderRepository);
                 break;
 
             default:
                 $this->logger->info('Stripe webhook: Unhandled event type', ['type' => $event->type]);
         }
 
-        return new Response('OK', Response::HTTP_OK);
+        return $response;
     }
 
     /**
@@ -88,44 +89,41 @@ class StripeWebhookController extends AbstractController
      */
     private function handleCheckoutSessionCompleted(
         object $session,
-        OrderRepository $orderRepository,
-        EntityManagerInterface $entityManager
-    ): void {
+        OrderRepository $orderRepository
+    ): Response {
         $orderId = $session->metadata->order_id ?? null;
 
         if (!$orderId) {
             $this->logger->warning('Stripe webhook: No order_id in session metadata', ['session_id' => $session->id]);
-            return;
+            return new Response('Missing order_id', Response::HTTP_OK); // On retourne OK car Stripe n'y peut rien
         }
 
         $order = $orderRepository->find($orderId);
 
         if (!$order) {
             $this->logger->warning('Stripe webhook: Order not found', ['order_id' => $orderId]);
-            return;
+            return new Response('Order not found', Response::HTTP_OK); // On retourne OK car Stripe n'y peut rien
         }
 
         // Ne mettre à jour que si la commande est en attente
         if ($order->getStatus() === 'pending') {
-            $order->setStatus('paid');
-            $order->setStripePaymentIntentId($session->payment_intent);
+            try {
+                $this->orderService->completePayment($order, $session->payment_intent);
 
-            // Décrémenter le stock
-            foreach ($order->getOrderItems() as $orderItem) {
-                $product = $orderItem->getProduct();
-                if ($product && $product->getStock() !== null) {
-                    $newStock = $product->getStock() - $orderItem->getQuantity();
-                    $product->setStock(max(0, $newStock)); // Éviter les stocks négatifs
-                }
+                $this->logger->info('Stripe webhook: Order marked as paid via OrderService', [
+                    'order_id' => $orderId,
+                    'session_id' => $session->id
+                ]);
+            } catch (\Exception $e) {
+                $this->logger->error('Stripe webhook: Error processing payment', [
+                    'order_id' => $orderId,
+                    'error' => $e->getMessage()
+                ]);
+                return new Response('Error processing order', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-
-            $entityManager->flush();
-
-            $this->logger->info('Stripe webhook: Order marked as paid', [
-                'order_id' => $orderId,
-                'session_id' => $session->id
-            ]);
         }
+
+        return new Response('OK', Response::HTTP_OK);
     }
 
     /**
@@ -133,23 +131,24 @@ class StripeWebhookController extends AbstractController
      */
     private function handleCheckoutSessionExpired(
         object $session,
-        OrderRepository $orderRepository,
-        EntityManagerInterface $entityManager
-    ): void {
+        OrderRepository $orderRepository
+    ): Response {
         $orderId = $session->metadata->order_id ?? null;
 
         if (!$orderId) {
-            return;
+            return new Response('OK', Response::HTTP_OK);
         }
 
         $order = $orderRepository->find($orderId);
 
         if ($order && $order->getStatus() === 'pending') {
             $order->setStatus('cancelled');
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->logger->info('Stripe webhook: Order cancelled (session expired)', ['order_id' => $orderId]);
         }
+
+        return new Response('OK', Response::HTTP_OK);
     }
 
     /**
@@ -157,20 +156,21 @@ class StripeWebhookController extends AbstractController
      */
     private function handlePaymentFailed(
         object $paymentIntent,
-        OrderRepository $orderRepository,
-        EntityManagerInterface $entityManager
-    ): void {
+        OrderRepository $orderRepository
+    ): Response {
         // Recherche de la commande par payment intent ID
         $order = $orderRepository->findOneBy(['stripePaymentIntentId' => $paymentIntent->id]);
 
         if ($order && $order->getStatus() === 'pending') {
             $order->setStatus('cancelled');
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->logger->info('Stripe webhook: Order cancelled (payment failed)', [
                 'order_id' => $order->getId(),
                 'payment_intent' => $paymentIntent->id
             ]);
         }
+
+        return new Response('OK', Response::HTTP_OK);
     }
 }

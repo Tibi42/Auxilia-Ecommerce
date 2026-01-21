@@ -184,7 +184,7 @@ class OrderController extends AbstractController
             $orderItem->setQuantity($quantity);
             $orderItem->setPrice($product->getPrice());
             $orderItem->setTotal((string)($product->getPrice() * $quantity));
-            
+
             // Utiliser addOrderItem pour que la collection soit correctement mise à jour
             $order->addOrderItem($orderItem);
             $entityManager->persist($orderItem);
@@ -207,7 +207,6 @@ class OrderController extends AbstractController
 
             // Redirection vers Stripe Checkout
             return $this->redirect($checkoutSession->url);
-
         } catch (\Exception $e) {
             // En cas d'erreur Stripe, marquer la commande comme annulée
             // (on ne peut pas la supprimer car les OrderItems ont des contraintes FK)
@@ -236,7 +235,8 @@ class OrderController extends AbstractController
         StripeService $stripeService,
         OrderRepository $orderRepository,
         EntityManagerInterface $entityManager,
-        CartService $cartService
+        CartService $cartService,
+        \App\Service\OrderService $orderService
     ): Response {
         $sessionId = $request->query->get('session_id');
 
@@ -248,14 +248,14 @@ class OrderController extends AbstractController
                 // Recherche de la commande associée via les métadonnées Stripe
                 // (plus fiable que stripe_session_id qui peut ne pas avoir été sauvé)
                 $order = null;
-                
+
                 // D'abord essayer par stripe_session_id
                 $order = $orderRepository->findOneBy(['stripeSessionId' => $sessionId]);
-                
+
                 // Si non trouvé, utiliser l'order_id des métadonnées Stripe
                 if (!$order && isset($session->metadata->order_id)) {
                     $order = $orderRepository->find($session->metadata->order_id);
-                    
+
                     // Mettre à jour le stripe_session_id si on a trouvé la commande
                     if ($order) {
                         $order->setStripeSessionId($sessionId);
@@ -265,19 +265,7 @@ class OrderController extends AbstractController
                 if ($order && $session->payment_status === 'paid') {
                     // Mettre à jour la commande si elle est encore en pending
                     if ($order->getStatus() === 'pending') {
-                        $order->setStatus('paid');
-                        $order->setStripePaymentIntentId($session->payment_intent);
-
-                        // Décrémenter le stock maintenant que le paiement est confirmé
-                        foreach ($order->getOrderItems() as $orderItem) {
-                            $product = $orderItem->getProduct();
-                            if ($product && $product->getStock() !== null) {
-                                $newStock = $product->getStock() - $orderItem->getQuantity();
-                                $product->setStock(max(0, $newStock));
-                            }
-                        }
-
-                        $entityManager->flush();
+                        $orderService->completePayment($order, $session->payment_intent);
                     }
 
                     // Toujours vider le panier après un paiement réussi
@@ -288,7 +276,7 @@ class OrderController extends AbstractController
                 error_log('Stripe success error: ' . $e->getMessage());
             }
         }
-        
+
         // Vider le panier dans tous les cas si on arrive sur la page de succès avec un session_id valide
         // (au cas où le try/catch aurait échoué mais le paiement est quand même valide)
         if ($sessionId) {
