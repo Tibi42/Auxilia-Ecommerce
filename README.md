@@ -8,16 +8,27 @@ Application e-commerce développée avec Symfony 7.x permettant la gestion compl
 
 - **Catalogue de produits** : Affichage, recherche, filtrage par catégorie et tri
 - **Gestion du panier** : Ajout, modification, suppression de produits avec persistance entre sessions
+- **Paiement sécurisé** : Intégration **Stripe Checkout** pour les transactions par carte bancaire
 - **Gestion des commandes** : Visualisation de l'historique et détails des commandes
 - **Authentification** : Inscription, connexion, réinitialisation de mot de passe
 - **Profil utilisateur** : Gestion des informations personnelles et historique des commandes
+- **Newsletter** : Inscription dynamique via AJAX
+- **Témoignages** : Dépôt d'avis et notation (étoiles) sur la boutique
 
 ### Administration
 
-- **Tableau de bord** : Statistiques globales (produits, utilisateurs, commandes)
+- **Tableau de bord** : Statistiques globales (CA, produits, utilisateurs, commandes, avis)
 - **Gestion des produits** : CRUD complet avec gestion du stock et des catégories
 - **Gestion des utilisateurs** : Visualisation, édition, réinitialisation de mot de passe, activation/désactivation de comptes
-- **Gestion des commandes** : Liste complète avec filtrage par statut et détails
+- **Gestion des commandes** : Suivi complet avec filtrage par statut et **gestion de la livraison** (transporteur, numéro de suivi)
+- **Modération** : Validation des témoignages clients avant publication
+- **Newsletter** : Liste et gestion des abonnés
+
+### ⚡ Expérience & Tech
+
+- **Hotwire Turbo & Stimulus** : Navigation ultra-rapide sans rechargement de page (Proche d'une SPA)
+- **Modales Dynamiques** : Consultation de produits fluide et interactive
+- **Design Responsive** : Optimisation "Mobile-First" pour tous les écrans
 
 ## 📋 Prérequis
 
@@ -141,15 +152,17 @@ templates/
 **Order** : Commandes
 
 - Utilisateur associé
-- Statut (paid, confirmed, pending, shipped, delivered, cancelled)
+- Statut (pending, paid, confirmed, shipped, delivered, cancelled)
 - Total, date
+- Informations de livraison (carrier, trackingNumber, shippedAt)
+- Identifiants de transaction Stripe
 - Relation OneToMany avec OrderItem
 
 **OrderItem** : Articles de commande
 
 - Produit associé
 - Quantité, prix unitaire, total
-- Nom du produit (snapshot pour historique)
+- Snapshots sécurisés du produit (nom et prix persistés au moment de l'achat)
 
 ## 🔧 Services
 
