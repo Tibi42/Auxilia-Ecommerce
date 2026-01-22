@@ -63,6 +63,24 @@ class Order
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripePaymentIntentId = null;
 
+    /**
+     * Numéro de suivi du colis
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $trackingNumber = null;
+
+    /**
+     * Transporteur (ex: Colissimo, DHL, UPS)
+     */
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $carrier = null;
+
+    /**
+     * Date et heure d'expédition
+     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $shippedAt = null;
+
     #[ORM\OneToMany(mappedBy: 'orderRef', targetEntity: OrderItem::class, orphanRemoval: true)]
     private $orderItems;
 
@@ -230,6 +248,60 @@ class Order
     public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
     {
         $this->stripePaymentIntentId = $stripePaymentIntentId;
+
+        return $this;
+    }
+
+    /**
+     * Récupère le numéro de suivi
+     */
+    public function getTrackingNumber(): ?string
+    {
+        return $this->trackingNumber;
+    }
+
+    /**
+     * Définit le numéro de suivi
+     */
+    public function setTrackingNumber(?string $trackingNumber): static
+    {
+        $this->trackingNumber = $trackingNumber;
+
+        return $this;
+    }
+
+    /**
+     * Récupère le transporteur
+     */
+    public function getCarrier(): ?string
+    {
+        return $this->carrier;
+    }
+
+    /**
+     * Définit le transporteur
+     */
+    public function setCarrier(?string $carrier): static
+    {
+        $this->carrier = $carrier;
+
+        return $this;
+    }
+
+    /**
+     * Récupère la date d'expédition
+     */
+    public function getShippedAt(): ?\DateTimeInterface
+    {
+        return $this->shippedAt;
+    }
+
+    /**
+     * Définit la date d'expédition
+     */
+    public function setShippedAt(?\DateTimeInterface $shippedAt): static
+    {
+        $this->shippedAt = $shippedAt;
 
         return $this;
     }

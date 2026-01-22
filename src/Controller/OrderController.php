@@ -82,6 +82,34 @@ class OrderController extends AbstractController
     }
 
     /**
+     * Affiche la page de suivi de livraison pour une commande
+     * 
+     * @param int $id L'identifiant de la commande
+     * @param OrderRepository $orderRepository Le repository pour récupérer la commande
+     * @return Response Une instance de Response contenant la vue de suivi
+     */
+    #[Route('/profile/orders/{id}/tracking', name: 'app_order_tracking')]
+    public function tracking(int $id, OrderRepository $orderRepository): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $order = $orderRepository->find($id);
+
+        if (!$order || $order->getUser() !== $user) {
+            $this->addFlash('error', 'Commande introuvable.');
+            return $this->redirectToRoute('app_orders');
+        }
+
+        return $this->render('order/tracking.html.twig', [
+            'order' => $order,
+        ]);
+    }
+
+    /**
      * Vérifie les informations de l'utilisateur avant de valider la commande
      * 
      * Vérifie si l'utilisateur est connecté, si le panier n'est pas vide et si les

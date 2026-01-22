@@ -106,11 +106,50 @@ final class OrderController extends AbstractController
 
         if ($newStatus && in_array($newStatus, $validStatuses, true)) {
             $order->setStatus($newStatus);
+
+            // Si le statut passe à 'shipped' et que la date n'est pas encore définie
+            if ($newStatus === 'shipped' && !$order->getShippedAt()) {
+                $order->setShippedAt(new \DateTime());
+            }
+
             $entityManager->flush();
             $this->addFlash('success', 'Statut de la commande mis à jour avec succès.');
         } else {
             $this->addFlash('error', 'Statut invalide.');
         }
+
+        return $this->redirectToRoute('app_admin_order_show', ['id' => $id]);
+    }
+
+    /**
+     * Met à jour les informations de livraison (transporteur et numéro de suivi)
+     */
+    #[Route('/admin/orders/{id}/delivery', name: 'app_admin_order_delivery_update', methods: ['POST'])]
+    public function updateDelivery(int $id, Request $request, OrderRepository $orderRepository, \Doctrine\ORM\EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('order-delivery-' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $id]);
+        }
+
+        $order = $orderRepository->find($id);
+
+        if (!$order) {
+            $this->addFlash('error', 'Commande introuvable.');
+            return $this->redirectToRoute('app_admin_orders');
+        }
+
+        $carrier = $request->request->get('carrier');
+        $trackingNumber = $request->request->get('tracking_number');
+
+        $order->setCarrier($carrier);
+        $order->setTrackingNumber($trackingNumber);
+
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Informations de livraison mises à jour.');
 
         return $this->redirectToRoute('app_admin_order_show', ['id' => $id]);
     }

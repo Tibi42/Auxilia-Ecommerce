@@ -103,6 +103,14 @@
 									{% endif %}
 								</span>
 							</div>
+
+							{% if order.status in ['paid', 'shipped', 'delivered'] %}
+								<div style="margin-top: 1.5rem;">
+									<a href="{{ path('app_order_tracking', {id: order.id}) }}" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+										<i class="fas fa-shipping-fast"></i> Suivre la livraison
+									</a>
+								</div>
+							{% endif %}
 						</div>
 					</div>
 				</div>
